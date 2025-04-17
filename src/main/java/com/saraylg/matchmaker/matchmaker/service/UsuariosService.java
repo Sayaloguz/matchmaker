@@ -5,11 +5,14 @@ import com.saraylg.matchmaker.matchmaker.dto.SteamPlayer;
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
+import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
 import com.saraylg.matchmaker.matchmaker.repository.UsuariosRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -45,6 +48,27 @@ public class UsuariosService {
         return outputDto;
     }
 
+
+    public List<UsuarioOutputDTO> getAllUsers() {
+        return usuariosRepository.findAllUsers()
+                .stream()
+                .map(usuarioMapper::entityToOutputDto)
+                .toList();
+    }
+
+    public UsuarioOutputDTO getUserById(String steamId) {
+        UsuarioEntity user = usuariosRepository.findUserById(steamId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return usuarioMapper.entityToOutputDto(user);
+    }
+
+    public UsuarioOutputDTO updateUser(String steamId, UsuarioInputDTO dto) {
+        return usuariosRepository.updateUser(steamId, dto);
+    }
+
+    public String deleteUser(String steamId) {
+        return usuariosRepository.deleteUser(steamId);
+    }
 
 
     // Métodos complementarios

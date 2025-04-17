@@ -5,7 +5,10 @@ import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.service.UsuariosService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -14,8 +17,8 @@ public class UsuariosController {
 
     private final UsuariosService usuariosService;
 
-
-    @GetMapping("/{steamId}")
+    // Este es de prueba
+    @GetMapping("/steam/{steamId}")
     public UsuarioOutputDTO getPlayerData(@PathVariable String steamId) {
         return usuariosService.getPlayer(steamId);
     }
@@ -30,6 +33,30 @@ public class UsuariosController {
     @PostMapping("/{steamId}")
     public UsuarioOutputDTO getAndSavePlayer(@PathVariable String steamId) {
         return usuariosService.getAndSavePlayer(steamId);
+    }
+
+
+    @GetMapping("/")
+    public List<UsuarioOutputDTO> getAllUsers() {
+        return usuariosService.getAllUsers();
+    }
+
+    @GetMapping("/mongo/{steamId}")
+    public UsuarioOutputDTO getUserById(@PathVariable String steamId) {
+        return usuariosService.getUserById(steamId);
+    }
+
+    @PutMapping("/{steamId}")
+    public UsuarioOutputDTO updateUser(
+            @PathVariable String steamId,
+            @RequestBody @Valid UsuarioInputDTO usuarioDTO
+    ) {
+        return usuariosService.updateUser(steamId, usuarioDTO);
+    }
+
+    @DeleteMapping("/{steamId}")
+    public String deleteUser(@PathVariable String steamId) {
+        return usuariosService.deleteUser(steamId);
     }
 
 
