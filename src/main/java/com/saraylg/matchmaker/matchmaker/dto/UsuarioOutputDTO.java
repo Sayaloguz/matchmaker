@@ -10,21 +10,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioDTO {
+public class UsuarioOutputDTO {
 
-    @NotBlank (message = "Steam ID cannot be blank")
     private String steamId;
 
-    @NotBlank (message = "Name cannot be blank")
     private String name;
 
-    @NotBlank (message = "Profile URL cannot be blank")
     private String profileUrl;
 
-    @NotBlank (message = "Avatar cannot be blank")
     private String avatar;
 
-    @NotBlank (message = "Time created cannot be blank")
     private String timeCreated;
 
 }

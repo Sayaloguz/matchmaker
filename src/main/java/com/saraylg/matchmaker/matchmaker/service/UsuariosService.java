@@ -2,7 +2,8 @@ package com.saraylg.matchmaker.matchmaker.service;
 
 import com.saraylg.matchmaker.matchmaker.dto.SteamApiResponse;
 import com.saraylg.matchmaker.matchmaker.dto.SteamPlayer;
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioDTO;
+import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.repository.UsuariosRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,44 +27,50 @@ public class UsuariosService {
     private static final String STEAM_API_PLAYER_URL = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/";
 
 
-
-    public UsuarioDTO getPlayer(String steamId) {
-
-        return usuarioMapper.steamPlayerToDto(fetchSteamPlayer(steamId));
-
+    public UsuarioOutputDTO getPlayer(String steamId) {
+        return usuarioMapper.steamPlayerToOutputDto(fetchSteamPlayer(steamId));
     }
 
 
-    public String saveUser(UsuarioDTO usuarioDTO) {
-
+    public String saveUser(UsuarioInputDTO usuarioDTO) {
         return usuariosRepository.saveUser(usuarioDTO);
-
     }
 
 
-    public UsuarioDTO getAndSavePlayer(String steamId) {
-
-        UsuarioDTO dto = usuarioMapper.steamPlayerToDto(fetchSteamPlayer(steamId));
+    public UsuarioOutputDTO getAndSavePlayer(String steamId) {
+        UsuarioInputDTO dto = usuarioMapper.steamPlayerToDto(fetchSteamPlayer(steamId));
         usuariosRepository.saveUser(dto);
 
-        return dto;
+        UsuarioOutputDTO outputDto = usuarioMapper.dtoToOutputDto(dto);
+        return outputDto;
     }
+
 
 
     // Métodos complementarios
 
     private SteamPlayer fetchSteamPlayer(String steamId) {
-        SteamApiResponse steamApiResponse = webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(STEAM_API_PLAYER_URL)
-                        .queryParam("key", steamApiKey)
-                        .queryParam("steamids", steamId)
-                        .build())
-                .retrieve()
-                .bodyToMono(SteamApiResponse.class)
-                .block();
+        try {
+            SteamApiResponse response = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(STEAM_API_PLAYER_URL)
+                            .queryParam("key", steamApiKey)
+                            .queryParam("steamids", steamId)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(SteamApiResponse.class)
+                    .block();
 
-        return steamApiResponse.getResponse().getPlayers().get(0);
+            if (response == null || response.getResponse().getPlayers().isEmpty()) {
+                throw new RuntimeException("No se encontró información del jugador con Steam ID: " + steamId);
+            }
+
+            return response.getResponse().getPlayers().get(0);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al consultar la Steam API: " + e.getMessage(), e);
+        }
+
     }
 
 }

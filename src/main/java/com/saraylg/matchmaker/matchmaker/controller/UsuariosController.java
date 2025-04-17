@@ -1,7 +1,9 @@
 package com.saraylg.matchmaker.matchmaker.controller;
 
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioDTO;
+import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.service.UsuariosService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,21 +16,19 @@ public class UsuariosController {
 
 
     @GetMapping("/{steamId}")
-    public UsuarioDTO getPlayerData(@PathVariable String steamId) {
-
+    public UsuarioOutputDTO getPlayerData(@PathVariable String steamId) {
         return usuariosService.getPlayer(steamId);
-
     }
 
 
     @PostMapping("/")
-    public String saveUser(@RequestBody UsuarioDTO usuarioDTO) {
+    public String saveUser(@Valid @RequestBody UsuarioInputDTO usuarioDTO) {
         return usuariosService.saveUser(usuarioDTO);
     }
 
 
     @PostMapping("/{steamId}")
-    public UsuarioDTO getAndSavePlayer(@PathVariable String steamId) {
+    public UsuarioOutputDTO getAndSavePlayer(@PathVariable String steamId) {
         return usuariosService.getAndSavePlayer(steamId);
     }
 
