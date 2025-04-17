@@ -22,9 +22,9 @@ public class UsuariosService {
     @Value("${steam.api.key}")
     private String steamApiKey;
 
-    private final WebClient webClient;
+    private final WebClient steamWebClient;
 
-    private static final String STEAM_API_PLAYER_URL = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/";
+    private static final String STEAM_API_PLAYER_PATH = "/ISteamUser/GetPlayerSummaries/v0002/";
 
 
     public UsuarioOutputDTO getPlayer(String steamId) {
@@ -51,9 +51,9 @@ public class UsuariosService {
 
     private SteamPlayer fetchSteamPlayer(String steamId) {
         try {
-            SteamApiResponse response = webClient.get()
+            SteamApiResponse response = steamWebClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path(STEAM_API_PLAYER_URL)
+                            .path(STEAM_API_PLAYER_PATH)
                             .queryParam("key", steamApiKey)
                             .queryParam("steamids", steamId)
                             .build())

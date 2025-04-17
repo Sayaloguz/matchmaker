@@ -11,4 +11,11 @@ public class WebClientConfig {
     public WebClient webClient(WebClient.Builder builder) {
         return builder.build();
     }
+
+    @Bean
+    public WebClient steamWebClient() {
+        return WebClient.builder()
+                .baseUrl("https://api.steampowered.com")
+                .build();
+    }
 }
