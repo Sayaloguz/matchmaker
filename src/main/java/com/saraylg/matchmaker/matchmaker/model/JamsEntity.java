@@ -26,7 +26,7 @@ public class JamsEntity {
     private String createdBy;
     private String createdAt;
     private Integer maxPlayers;
-    private ArrayList<UsuariosEntity> players;
+    private ArrayList<UsuarioEntity> players;
     private GameMode gameMode;
     private VoiceMode voiceMode;
     private String language;

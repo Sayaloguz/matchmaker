@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "usuarios")
-public class UsuariosEntity {
+public class UsuarioEntity {
 
     @Id
     private String steamId;
@@ -21,4 +21,5 @@ public class UsuariosEntity {
     private String profileUrl;
     private String avatar;
     private String timeCreated;
+
 }

@@ -12,16 +12,25 @@ public class UsuariosController {
 
     private final UsuariosService usuariosService;
 
-    /**
-     * Devuelve los datos públicos de un jugador de Steam
-     * @param steamId Steam ID del usuario
-     * @return  DTO con nombre, avatar, url de perfil, etc.
-     */
-    @GetMapping("/player-data/{steamId}")
+
+    @GetMapping("/{steamId}")
     public UsuarioDTO getPlayerData(@PathVariable String steamId) {
 
         return usuariosService.getPlayer(steamId);
 
     }
+
+
+    @PostMapping("/")
+    public String saveUser(@RequestBody UsuarioDTO usuarioDTO) {
+        return usuariosService.saveUser(usuarioDTO);
+    }
+
+
+    @PostMapping("/{steamId}")
+    public UsuarioDTO getAndSavePlayer(@PathVariable String steamId) {
+        return usuariosService.getAndSavePlayer(steamId);
+    }
+
 
 }
