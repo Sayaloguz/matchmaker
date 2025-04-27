@@ -5,11 +5,11 @@ import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.service.UsuariosService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
