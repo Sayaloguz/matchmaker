@@ -1,79 +1,51 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
+import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Map;
 
 @Service
 public class JwtService {
 
-    // Cambia esta clave secreta por una segura (mínimo 256 bits para HS256)
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private Key key;
 
-    public String generateToken(Map<String, Object> claims) {
+    @PostConstruct
+    public void init() {
+        // Genera una clave secreta aleatoria (idealmente usa una fija desde env en producción)
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
+
+    public String generateToken(UsuarioOutputDTO user) {
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(user.getSteamId())
+                .claim("name", user.getName())
+                .claim("profileUrl", user.getProfileUrl())
+                .claim("avatar", user.getAvatar())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)) // 7 días
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 día
                 .signWith(key)
                 .compact();
     }
 
-    public Key getKey() {
-        return key;
+    public UsuarioOutputDTO parseToken(String token) {
+        var claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return new UsuarioOutputDTO(
+                claims.getSubject(),
+                (String) claims.get("name"),
+                (String) claims.get("profileUrl"),
+                (String) claims.get("avatar"),
+                null // puedes agregar timeCreated si lo incluyes también como claim
+        );
     }
 }
-
-
-//package com.saraylg.matchmaker.matchmaker.service;
-//
-//import io.jsonwebtoken.Jwts;
-//import io.jsonwebtoken.SignatureAlgorithm;
-//import lombok.AllArgsConstructor;
-//import lombok.Getter;
-//import lombok.NoArgsConstructor;
-//import lombok.Setter;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.Date;
-//
-//@Getter
-//@Setter
-//@AllArgsConstructor
-//@Service
-//public class JwtService {
-//
-//    private final String SECRET_KEY = "pruebadeclavesecreta"; // Debería ser segura y en variables de entorno
-//    private final long EXPIRATION_TIME = 86400000; // 24 horas en milisegundos
-//
-//    public String generateToken(String steamId) {
-//        return Jwts.builder()
-//                .setSubject(steamId)
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-//                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-//                .compact();
-//    }
-//
-//    public String extractSteamId(String token) {
-//        return Jwts.parser()
-//                .setSigningKey(SECRET_KEY)
-//                .parseClaimsJws(token)
-//                .getBody()
-//                .getSubject();
-//    }
-//
-//    public boolean validateToken(String token) {
-//        try {
-//            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
-//            return true;
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
-//}

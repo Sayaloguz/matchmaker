@@ -1,15 +1,17 @@
 package com.saraylg.matchmaker.matchmaker.controller;
 
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
+import com.saraylg.matchmaker.matchmaker.service.JwtService;
 import com.saraylg.matchmaker.matchmaker.service.UsuariosService;
-import lombok.Getter;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -25,14 +27,15 @@ import java.util.StringJoiner;
 public class AuthController {
 
     private final UsuariosService usuariosService;
+    private final JwtService jwtService;
 
     @GetMapping("/prueba")
     public String prueba() {
         return "Prueba de autenticación exitosa";
     }
+
     @GetMapping("/steam/login")
     public void steamLogin(HttpServletResponse response) throws IOException {
-        // URL de login de Steam con parámetros básicos
         String steamUrl = "https://steamcommunity.com/openid/login?" +
                 "openid.ns=http://specs.openid.net/auth/2.0&" +
                 "openid.mode=checkid_setup&" +
@@ -43,51 +46,30 @@ public class AuthController {
 
         response.sendRedirect(steamUrl);
     }
-    // V3
+
     @GetMapping("/steam/callback")
-    public ResponseEntity<?> steamCallback(@RequestParam Map<String, String> params) {
+    public void steamCallback(@RequestParam Map<String, String> params, HttpServletResponse servletResponse) throws IOException {
         System.out.println("Callback de Steam recibido: " + params);
 
         if (verificarRespuestaSteam(params)) {
             String claimedId = params.get("openid.claimed_id");
             String steamId = claimedId.substring(claimedId.lastIndexOf("/") + 1);
 
-            // Aquí llamamos directamente al servicio de usuarios para registrar si no existe
             UsuarioOutputDTO user = usuariosService.getAndSavePlayer(steamId);
+            String token = jwtService.generateToken(user);
 
-            return ResponseEntity.status(302)
-                    .header("Location", "http://localhost:3000/perfil?id=" + steamId)
-                    .build();
+            Cookie cookie = new Cookie("jwt", token);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false); // Cambia a true si usas HTTPS
+            cookie.setPath("/");
+            cookie.setMaxAge(86400); // 1 día en segundos
+
+            servletResponse.addCookie(cookie);
+            servletResponse.sendRedirect("http://localhost:3000/perfil?id=" + steamId);
         } else {
-            return ResponseEntity.status(401).body("Autenticación con Steam fallida.");
+            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
         }
     }
-
-    /*
-    // V2
-    @GetMapping("/steam/callback")
-    public String steamCallback(@RequestParam Map<String, String> params) {
-        System.out.println("Callback de Steam recibido: " + params);
-
-        if (verificarRespuestaSteam(params)) {
-            String claimedId = params.get("openid.claimed_id");
-            String steamId = claimedId.substring(claimedId.lastIndexOf("/") + 1);
-            return "Autenticación válida. SteamID: " + steamId;
-        } else {
-            return "Autenticación fallida.";
-        }
-    }
-    */
-    // V1
-    /*
-
-    @GetMapping("/steam/callback")
-    public String steamCallback(@RequestParam Map<String, String> params) {
-        // Aquí deberías validar la respuesta de Steam.
-        System.out.println("Callback de Steam recibido: " + params);
-        return "Autenticación con Steam completada (aún sin validar)";
-    }*/
-
 
     private boolean verificarRespuestaSteam(Map<String, String> params) {
         try {
