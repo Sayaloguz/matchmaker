@@ -71,6 +71,7 @@ public class AuthController {
         }
     }
 
+
     private boolean verificarRespuestaSteam(Map<String, String> params) {
         try {
             URL url = new URL("https://steamcommunity.com/openid/login");
