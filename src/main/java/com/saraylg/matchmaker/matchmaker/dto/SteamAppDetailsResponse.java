@@ -2,16 +2,13 @@ package com.saraylg.matchmaker.matchmaker.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
 
-
 /**
- * SteamAppDetailsResponse extiende HashMap<String, AppDetails> porque el JSON es un map de appid -> AppDetails.
- * AppDetails tiene el flag success y un objeto data con la info del juego.
- * AppData tiene los campos que quieres: tipo, nombre, descripción corta, categorías e imagen.
- * Category es la lista de categorías con id y descripción.
+ * Representa la respuesta del endpoint /appdetails de Steam.
+ * Steam devuelve un mapa appid -> AppDetails.
+ * Nos quedamos solo con los campos relevantes: nombre, descripción, tipo, categorías, imagen y si es lanzamiento futuro.
  */
 @Data
 public class SteamAppDetailsResponse extends java.util.HashMap<String, SteamAppDetailsResponse.AppDetails> {
@@ -34,12 +31,19 @@ public class SteamAppDetailsResponse extends java.util.HashMap<String, SteamAppD
 
         @JsonProperty("header_image")
         private String headerImage;
+
+        @JsonProperty("release_date")
+        private ReleaseDate releaseDate;
+    }
+
+    @Data
+    public static class ReleaseDate {
+        @JsonProperty("coming_soon")
+        private boolean comingSoon;
     }
 
     @Data
     public static class Category {
-        private int id;
         private String description;
     }
 }
-

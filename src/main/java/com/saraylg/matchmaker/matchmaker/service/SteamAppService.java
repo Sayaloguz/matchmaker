@@ -16,6 +16,7 @@ import java.io.*;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -68,7 +69,7 @@ public class SteamAppService {
                     int current = counter.incrementAndGet();
                     lastProcessedAppId.set(app.getAppid());
                     if (current % 50 == 0) {
-                        System.out.println("Procesados: " + current + " apps");
+                        System.out.println("/////////////////////////////////// Procesados: " + current + " apps");
                     }
                 })
                 .buffer(50)
@@ -78,7 +79,7 @@ public class SteamAppService {
                 }))
                 .doOnNext(savedCount -> {
                     int total = totalSaved.addAndGet(savedCount);
-                    System.out.println("Guardado lote. Total acumulado: " + total);
+                    System.out.println("//////////////////////////////////////////// Guardado lote. Total acumulado: " + total);
                     saveLastAppId(lastProcessedAppId.get());
                 })
                 .blockLast();
@@ -89,7 +90,7 @@ public class SteamAppService {
 
     private Mono<SteamAppEntity> fetchDetails(Long appid) {
         return storeWebClient.get()
-                .uri("/appdetails?filters=basic&appids={id}", appid)
+                .uri("/appdetails?appids={id}", appid)
                 .retrieve()
                 .bodyToMono(SteamAppDetailsResponse.class)
                 .retryWhen(Retry.backoff(3, Duration.ofSeconds(10)))
@@ -97,10 +98,22 @@ public class SteamAppService {
                     SteamAppDetailsResponse.AppDetails d = resp.get(String.valueOf(appid));
                     if (d == null || d.getData() == null) return Mono.empty();
 
-                    String type = d.getData().getType();
-                    if ("game".equalsIgnoreCase(type) || "dlc".equalsIgnoreCase(type)) {
+                    boolean isGame = "game".equalsIgnoreCase(d.getData().getType());
+                    boolean comingSoon = Optional.ofNullable(d.getData().getReleaseDate())
+                            .map(SteamAppDetailsResponse.ReleaseDate::isComingSoon)
+                            .orElse(false);
+                    boolean isAdultOnly = Optional.ofNullable(d.getData().getCategories())
+                            .map(cats -> cats.stream()
+                                    .anyMatch(cat -> "Adult Only".equalsIgnoreCase(cat.getDescription())))
+                            .orElse(false);
+
+                    System.out.println("appid " + appid + " | " + d.getData().getName());
+
+                    if (isGame && !comingSoon && !isAdultOnly) {
+                        System.out.println("|||||||||||||||||||||||||||||||||||||||| Pasa el filtro - AppId: " + appid);
                         return Mono.just(mapper.toEntity(appid, d));
                     }
+
                     return Mono.empty();
                 })
                 .onErrorResume(e -> {
@@ -108,6 +121,7 @@ public class SteamAppService {
                     return Mono.empty();
                 });
     }
+
 
     private void saveLastAppId(long appid) {
         try (FileWriter writer = new FileWriter(LAST_APP_ID_FILE)) {
@@ -125,7 +139,18 @@ public class SteamAppService {
         }
     }
 
+    // Devolución de datos desde la BBDD
+
     public List<SteamAppEntity> findAll() {
         return repo.findAll();
     }
+
+    public Optional<SteamAppEntity> findByAppid(Long appid) {
+        return repo.findByAppid(appid);
+    }
+
+    public List<SteamAppEntity> findByName(String name) {
+        return repo.findByNameRegexIgnoreCase(".*" + name + ".*");
+    }
+
 }

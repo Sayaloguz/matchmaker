@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.model;
+package com.saraylg.matchmaker.matchmaker.model.enums;
 
 public enum GameMode {
     CASUAL,

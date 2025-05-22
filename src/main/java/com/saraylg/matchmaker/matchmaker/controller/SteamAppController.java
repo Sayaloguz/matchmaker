@@ -4,10 +4,7 @@ import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import com.saraylg.matchmaker.matchmaker.service.SteamAppService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,7 +15,6 @@ public class SteamAppController {
 
     private final SteamAppService service;
 
-    /** Fuerza una sincronización manual */
     @PostMapping("/sync")
     public ResponseEntity<String> sync() {
         long count = service.syncCatalog();
@@ -30,4 +26,21 @@ public class SteamAppController {
     public List<SteamAppEntity> list() {
         return service.findAll();
     }
+
+
+    // EP de búsqueda
+    @GetMapping("/by-id/{appid}")
+    public ResponseEntity<SteamAppEntity> getByAppId(@PathVariable Long appid) {
+        return service.findByAppid(appid)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+
+    // No se va a utilizar en principio, pero se deja por si acaso
+    @GetMapping("/search")
+    public List<SteamAppEntity> searchByName(@RequestParam String name) {
+        return service.findByName(name);
+    }
+
 }
