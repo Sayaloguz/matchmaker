@@ -3,26 +3,26 @@ package com.saraylg.matchmaker.matchmaker.mapper;
 import com.saraylg.matchmaker.matchmaker.dto.JamInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.JamModifyDTO;
 import com.saraylg.matchmaker.matchmaker.dto.JamOutputDTO;
-import com.saraylg.matchmaker.matchmaker.model.JamsEntity;
+import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface JamMapper {
-     JamOutputDTO jamToOutputDto(JamsEntity jamsEntity);
+     JamOutputDTO jamToOutputDto(JamEntity jamsEntity);
      JamOutputDTO jamInputToOutputDto(JamInputDTO jamInputDTO);
      JamOutputDTO jamModifyToJamOutput(JamModifyDTO jamModifyDTO);
 
-     JamsEntity jamInputDtoToJam(JamInputDTO jamInputDTO);
-     JamsEntity jamOutputDtoToJam(JamOutputDTO jamOutputDTO);
-     JamsEntity jamModifyDtoToJam(JamModifyDTO jamModifyDTO);
+     JamEntity jamInputDtoToJam(JamInputDTO jamInputDTO);
+     JamEntity jamOutputDtoToJam(JamOutputDTO jamOutputDTO);
+     JamEntity jamModifyDtoToJam(JamModifyDTO jamModifyDTO);
 
      JamInputDTO jamOutputToJamInput(JamOutputDTO jamOutputDTO);
-     JamInputDTO JamsEntityToJamInputDTO(JamsEntity jamsEntity);
+     JamInputDTO JamsEntityToJamInputDTO(JamEntity jamsEntity);
      JamInputDTO JamModifyDTOToJamInputDTO(JamModifyDTO jamModifyDTO);
 
      JamModifyDTO jamInputDtoToJamModifyDto(JamInputDTO jamInputDTO);
      JamModifyDTO jamOutputDtoToJamModifyDto(JamOutputDTO jamOutputDTO);
-     JamModifyDTO jamEntityToJamModifyDto(JamsEntity jamsEntity);
+     JamModifyDTO jamEntityToJamModifyDto(JamEntity jamsEntity);
 
 
 }

@@ -15,8 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SteamResponse {
+public class SteamResponseDTO {
 
     @JsonProperty("players")
-    private List<SteamPlayer> players;
+    private List<SteamPlayerDTO> players;
 }

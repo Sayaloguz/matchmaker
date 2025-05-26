@@ -16,5 +16,6 @@ import lombok.Setter;
 public class SteamApiResponse {
 
     @JsonProperty("response")
-    private SteamResponse response;
+    private SteamResponseDTO response;
+
 }

@@ -2,7 +2,7 @@ package com.saraylg.matchmaker.matchmaker.controller;
 
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.service.JwtService;
-import com.saraylg.matchmaker.matchmaker.service.UsuariosService;
+import com.saraylg.matchmaker.matchmaker.service.UsuarioService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +24,8 @@ import java.util.StringJoiner;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UsuariosService usuariosService;
+    private final UsuarioService usuariosService;
     private final JwtService jwtService;
-
-    @GetMapping("/prueba")
-    public String prueba() {
-        return "Prueba de autenticación exitosa";
-    }
 
     @GetMapping("/steam/login")
     public void steamLogin(HttpServletResponse response) throws IOException {
@@ -68,7 +63,6 @@ public class AuthController {
             servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
         }
     }
-
 
 
     private boolean verificarRespuestaSteam(Map<String, String> params) {

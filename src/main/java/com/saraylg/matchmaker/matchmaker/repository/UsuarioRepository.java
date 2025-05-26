@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor // Genera un constructor con los campos finales (Mapper y MongoRepository)
 @Repository // Marca esta clase como componente Spring para inyección de dependencias
-public class UsuariosRepository {
+public class UsuarioRepository {
 
     private final UsuarioMapper usuarioMapper;
     private final UsuarioMongoRepository usuarioMongoRepository;

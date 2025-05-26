@@ -11,7 +11,6 @@ import java.util.List;
 
 /**
  *  Utilizaremos SteamAppEntity para guardar los juegos y dlc de steam en nuestra base de datos.
- *
  */
 @Document(collection = "steam_games")
 @Data

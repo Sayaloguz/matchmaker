@@ -8,12 +8,12 @@ import java.util.List;
 @Data
 public class SteamAppListResponse {
 
-    @JsonProperty("applist")          // <- nombre real en el JSON
+    @JsonProperty("applist")          // nombre real en el JSON
     private AppList applist;
 
     @Data
     public static class AppList {
-        private List<App> apps;       // <- lista de juegos
+        private List<App> apps;       // lista de juegos
     }
 
     @Data

@@ -1,5 +1,6 @@
 package com.saraylg.matchmaker.matchmaker.controller;
 
+import com.saraylg.matchmaker.matchmaker.dto.TitleInputDTO;
 import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import com.saraylg.matchmaker.matchmaker.service.SteamAppService;
 import lombok.RequiredArgsConstructor;
@@ -9,27 +10,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/steam/apps")
+@RequestMapping("/games")
 @RequiredArgsConstructor
 public class SteamAppController {
 
     private final SteamAppService service;
 
-    @PostMapping("/sync")
-    public ResponseEntity<String> sync() {
-        long count = service.syncCatalog();
-        return ResponseEntity.ok("Catálogo actualizado: " + count + " juegos");
-    }
-
     /** Devuelve todo el catálogo desde Mongo */
-    @GetMapping
+    @GetMapping("/")
     public List<SteamAppEntity> list() {
         return service.findAll();
     }
 
 
-    // EP de búsqueda
-    @GetMapping("/by-id/{appid}")
+    @GetMapping("/getById/{appid}")
     public ResponseEntity<SteamAppEntity> getByAppId(@PathVariable Long appid) {
         return service.findByAppid(appid)
                 .map(ResponseEntity::ok)
@@ -37,10 +31,19 @@ public class SteamAppController {
     }
 
 
+    @PostMapping("/sync")
+    public ResponseEntity<String> sync() {
+        long count = service.syncCatalog();
+        return ResponseEntity.ok("Catálogo actualizado: " + count + " juegos");
+    }
+
+
     // No se va a utilizar en principio, pero se deja por si acaso
     @GetMapping("/search")
-    public List<SteamAppEntity> searchByName(@RequestParam String name) {
-        return service.findByName(name);
+    public List<SteamAppEntity> searchByName(@RequestParam TitleInputDTO titleDTO) {
+        System.out.println(titleDTO);
+        System.out.println(titleDTO.getTitle());
+        return service.findByName(titleDTO.getTitle());
     }
 
 }

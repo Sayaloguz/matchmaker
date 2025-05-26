@@ -18,21 +18,37 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "jams")
-public class JamsEntity {
+public class JamEntity {
+
     @Id
     private String id;
+
     private String title;
+
     private String description; // Descripción del usuario
+
     private SteamAppEntity game;
+
     private String jamDate; // Día de la quedada
+
     private String jamTime; // Hora de la quedada
+
     private JamState state;
+
     private UsuarioEntity createdBy;
+
     private String createdAt;
+
     private Integer maxPlayers;
+
     private ArrayList<UsuarioEntity> players; // En esta lista se ha de incluir al creador
+
     private GameMode gameMode;
+
     private VoiceMode voiceMode;
+
     private Languages language;
+
     private String duration;
+
 }

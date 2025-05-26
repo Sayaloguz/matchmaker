@@ -14,15 +14,25 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JamModifyDTO {
+
     private String id;
+
     private String title;
+
     private String description;
+
     private String jamDate;
+
     private String jamTime;
+
     private Integer maxPlayers;
+
     private GameMode gameMode;
+
     private VoiceMode voiceMode;
+
     private Languages language;
+
     private String duration;
 
 }

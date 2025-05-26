@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SteamPlayer {
+public class SteamPlayerDTO {
 
     @JsonProperty("steamid")
     private String steamId;

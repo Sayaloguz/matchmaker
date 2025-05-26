@@ -1,12 +1,12 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
 import com.saraylg.matchmaker.matchmaker.dto.SteamApiResponse;
-import com.saraylg.matchmaker.matchmaker.dto.SteamPlayer;
+import com.saraylg.matchmaker.matchmaker.dto.SteamPlayerDTO;
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
-import com.saraylg.matchmaker.matchmaker.repository.UsuariosRepository;
+import com.saraylg.matchmaker.matchmaker.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,9 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class UsuariosService {
+public class UsuarioService {
 
-    private final UsuariosRepository usuariosRepository;
+    private final UsuarioRepository usuariosRepository;
     private final UsuarioMapper usuarioMapper;
 
     @Value("${steam.api.key}")
@@ -39,19 +39,11 @@ public class UsuariosService {
         if (userOpt.isPresent()) {
             return usuarioMapper.entityToOutputDto(userOpt.get());
         } else {
-            SteamPlayer steamPlayer = fetchSteamPlayer(steamId);
+            SteamPlayerDTO steamPlayer = fetchSteamPlayer(steamId);
             UsuarioInputDTO dto = usuarioMapper.steamPlayerToDto(steamPlayer);
             usuariosRepository.saveUser(dto);
             return usuarioMapper.dtoToOutputDto(dto);
         }
-    }
-
-    /**
-     * Guarda un nuevo usuario directamente.
-     * ❌ No usa la API de Steam.
-     */
-    public String saveUser(UsuarioInputDTO usuarioDTO) {
-        return usuariosRepository.saveUser(usuarioDTO);
     }
 
     /**
@@ -65,7 +57,7 @@ public class UsuariosService {
             return usuarioMapper.entityToOutputDto(existing.get());
         }
 
-        SteamPlayer steamPlayer = fetchSteamPlayer(steamId);
+        SteamPlayerDTO steamPlayer = fetchSteamPlayer(steamId);
         UsuarioInputDTO dto = usuarioMapper.steamPlayerToDto(steamPlayer);
         usuariosRepository.saveUser(dto);
         return usuarioMapper.dtoToOutputDto(dto);
@@ -112,7 +104,7 @@ public class UsuariosService {
      * Método interno para consultar a la Steam Web API y obtener los datos de un jugador.
      * ✅ Usa la API de Steam.
      */
-    private SteamPlayer fetchSteamPlayer(String steamId) {
+    private SteamPlayerDTO fetchSteamPlayer(String steamId) {
         try {
             SteamApiResponse response = steamWebClient.get()
                     .uri(uriBuilder -> uriBuilder

@@ -2,9 +2,7 @@ package com.saraylg.matchmaker.matchmaker.controller;
 
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
-import com.saraylg.matchmaker.matchmaker.service.SteamOpenIdService;
-import com.saraylg.matchmaker.matchmaker.service.UsuariosService;
-import com.saraylg.matchmaker.matchmaker.service.JwtService;
+import com.saraylg.matchmaker.matchmaker.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,23 +12,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class UsuariosController {
+public class UsuarioController {
 
-    private final UsuariosService usuariosService;
-    private final SteamOpenIdService steamOpenIdService;
-    private final JwtService jwtService;
+    private final UsuarioService usuariosService;
 
-    @GetMapping("/steam/{steamId}")
+    @GetMapping("/byId/steam/{steamId}")
     public UsuarioOutputDTO getPlayerData(@PathVariable String steamId) {
         return usuariosService.getPlayer(steamId);
     }
 
-    @PostMapping("/")
-    public String saveUser(@Valid @RequestBody UsuarioInputDTO usuarioDTO) {
-        return usuariosService.saveUser(usuarioDTO);
+    @GetMapping("/byId/mongo/{steamId}")
+    public UsuarioOutputDTO getUserById(@PathVariable String steamId) {
+        return usuariosService.getUserById(steamId);
     }
 
-    @PostMapping("/{steamId}")
+    @PostMapping("/save/{steamId}")
     public UsuarioOutputDTO getAndSavePlayer(@PathVariable String steamId) {
         return usuariosService.getAndSavePlayer(steamId);
     }
@@ -40,12 +36,8 @@ public class UsuariosController {
         return usuariosService.getAllUsers();
     }
 
-    @GetMapping("/mongo/{steamId}")
-    public UsuarioOutputDTO getUserById(@PathVariable String steamId) {
-        return usuariosService.getUserById(steamId);
-    }
 
-    @PutMapping("/{steamId}")
+    @PutMapping("/update/{steamId}")
     public UsuarioOutputDTO updateUser(
             @PathVariable String steamId,
             @RequestBody @Valid UsuarioInputDTO usuarioDTO
@@ -53,7 +45,7 @@ public class UsuariosController {
         return usuariosService.updateUser(steamId, usuarioDTO);
     }
 
-    @DeleteMapping("/{steamId}")
+    @DeleteMapping("/delete/{steamId}")
     public String deleteUser(@PathVariable String steamId) {
         return usuariosService.deleteUser(steamId);
     }

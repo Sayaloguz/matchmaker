@@ -20,18 +20,31 @@ import java.util.ArrayList;
 public class JamInputDTO {
     @NotBlank(message = "El título es obligatorio")
     private String title;
+
     private String description;
+
     private SteamAppEntity game;
+
     private String jamDate;
+
     private String jamTime;
+
     private JamState state;
+
     private UsuarioEntity createdBy;
+
     private String createdAt;
+
     private Integer maxPlayers;
+
     private ArrayList<UsuarioEntity> players;
+
     private GameMode gameMode;
+
     private VoiceMode voiceMode;
+
     private Languages language;
+
     private String duration;
 
 }

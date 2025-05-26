@@ -5,9 +5,11 @@ import com.saraylg.matchmaker.matchmaker.dto.JamModifyDTO;
 import com.saraylg.matchmaker.matchmaker.dto.JamOutputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
-import com.saraylg.matchmaker.matchmaker.repository.JamsRepository;
+import com.saraylg.matchmaker.matchmaker.repository.JamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
 @Service
 public class JamService {
 
-    private final JamsRepository jamsRepository;
+    private final JamRepository jamsRepository;
     private final JamMapper jamMapper;
 
     public List<JamOutputDTO> getAllJams() {
@@ -68,5 +70,16 @@ public class JamService {
         return jamsRepository.removePlayerFromJam(jamId, steamIdToRemove);
     }
 
+    // Obtener jams que ha hecho un usuario y en las que participa
+
+    @GetMapping("/byCreator/{id}")
+    public List<JamOutputDTO> getJamsByCreator(String id) {
+        return jamsRepository.getJamsByCreator(id);
+    }
+
+    @GetMapping("/byUser/{id}")
+    public List<JamOutputDTO> getJamsByUser(String id) {
+        return jamsRepository.getJamsByUser(id);
+    }
 
 }

@@ -17,18 +17,33 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JamOutputDTO {
+
     private String id;
+
     private String title;
+
     private String description;
+
     private SteamAppEntity game;
+
     private String jamDate;
+
     private String jamTime;
+
     private JamState state;
+
     private UsuarioEntity createdBy;
+
     private String createdAt;
+
     private Integer maxPlayers;
+
     private ArrayList<UsuarioEntity> players;
+
     private GameMode gameMode;
+
     private VoiceMode voiceMode;
+
     private Languages language;
+
 }
