@@ -12,11 +12,15 @@ import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
+import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
 import com.saraylg.matchmaker.matchmaker.mongo.JamMongoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +32,21 @@ public class JamRepository {
     private final JamMapper jamMapper;
     private final JamMongoRepository jamMongoRepository;
     private final UsuarioMapper usuarioMapper;
+
+
+    public void updateJamStateIfNeeded(JamEntity jam) {
+        if (jam.getState() == JamState.FINISHED) return;
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate jamDate = LocalDate.parse(jam.getJamDate());
+        LocalTime jamTime = LocalTime.parse(jam.getJamTime());
+        LocalDateTime jamDateTime = LocalDateTime.of(jamDate, jamTime);
+
+        if (jamDateTime.isBefore(now)) {
+            jam.setState(JamState.FINISHED);
+        }
+    }
+
 
     public JamOutputDTO newJam(JamInputDTO jamInputDTO) {
         JamEntity jam = jamMapper.jamInputDtoToJam(jamInputDTO);
@@ -42,17 +61,21 @@ public class JamRepository {
 
         List<JamOutputDTO> jamsDTO = new ArrayList<>();
         for (JamEntity jam : jams) {
+            updateJamStateIfNeeded(jam);
             jamsDTO.add(jamMapper.jamToOutputDto(jam));
         }
         return jamsDTO;
     }
 
     public Optional<JamEntity> getJamById(String id) {
+        Optional<JamEntity> jamOpt = jamMongoRepository.findById(id);
+        jamOpt.ifPresent(this::updateJamStateIfNeeded);
+        return jamOpt;
 
-        return jamMongoRepository.findById(id);
-
+        //return jamMongoRepository.findById(id);
     }
 
+    // No actualizamos el estado aquí
     public Optional<JamEntity> getJamsByTitle(String title) {
         return jamMongoRepository.findAll().stream()
                 .filter(jam -> jam.getTitle().toLowerCase().contains(title.toLowerCase()))
@@ -62,12 +85,14 @@ public class JamRepository {
     public List<JamEntity> getJamByState(String state) {
         return jamMongoRepository.findAll().stream()
                 .filter(jam -> String.valueOf(jam.getState()).equalsIgnoreCase(state))
+                .peek(this::updateJamStateIfNeeded)
                 .toList();
     }
 
     public List<JamEntity> getJamByMode(String gameMode) {
         return jamMongoRepository.findAll().stream()
                 .filter(jam -> String.valueOf(jam.getGameMode()).equalsIgnoreCase(gameMode))
+                .peek(this::updateJamStateIfNeeded)
                 .toList();
     }
 
@@ -127,6 +152,7 @@ public class JamRepository {
             jam.getPlayers().removeIf(p -> p.getSteamId().equals(steamIdToRemove));
         }
 
+        updateJamStateIfNeeded(jam); // <<<<< Puede pasar de FULL a OPEN
         JamEntity updated = jamMongoRepository.save(jam);
         return jamMapper.jamToOutputDto(updated);
     }
@@ -136,6 +162,7 @@ public class JamRepository {
     public List<JamOutputDTO> getJamsByCreator(String steamId) {
         return jamMongoRepository
                 .findByCreatedBy_SteamId(steamId).stream()
+                .peek(this::updateJamStateIfNeeded)
                 .map(jamMapper::jamToOutputDto)
                 .toList();
     }
@@ -143,6 +170,7 @@ public class JamRepository {
     public List<JamOutputDTO> getJamsByUser(String steamId) {
         return jamMongoRepository
                 .findByPlayers_SteamId(steamId).stream()
+                .peek(this::updateJamStateIfNeeded)
                 .map(jamMapper::jamToOutputDto)
                 .toList();
     }
