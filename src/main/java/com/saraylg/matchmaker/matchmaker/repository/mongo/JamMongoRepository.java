@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.mongo;
+package com.saraylg.matchmaker.matchmaker.repository.mongo;
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
 import org.springframework.data.mongodb.repository.MongoRepository;

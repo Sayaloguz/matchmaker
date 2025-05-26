@@ -19,7 +19,6 @@ public class JamController {
     @GetMapping("/")
     public List<JamOutputDTO> getAllJams() {
 
-        System.out.println("HOLA");
         return jamService.getAllJams();
     }
 
@@ -60,7 +59,6 @@ public class JamController {
 
     @PostMapping("/save")
     public JamOutputDTO createJam(@Valid @RequestBody JamInputDTO jamInputDTO) {
-        System.out.println("HOLA");
         return jamService.newJam(jamInputDTO);
     }
 

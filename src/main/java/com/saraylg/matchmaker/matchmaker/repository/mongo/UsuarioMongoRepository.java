@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.mongo;
+package com.saraylg.matchmaker.matchmaker.repository.mongo;
 
 import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;

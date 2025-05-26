@@ -1,6 +1,5 @@
 package com.saraylg.matchmaker.matchmaker.exceptions;
 
-import com.saraylg.matchmaker.matchmaker.exceptions.InvalidJamOperationException;
 import com.saraylg.matchmaker.matchmaker.model.GenericResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

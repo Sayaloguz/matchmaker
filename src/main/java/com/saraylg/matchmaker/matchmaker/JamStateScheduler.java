@@ -2,13 +2,12 @@ package com.saraylg.matchmaker.matchmaker;
 
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
-import com.saraylg.matchmaker.matchmaker.mongo.JamMongoRepository;
+import com.saraylg.matchmaker.matchmaker.repository.mongo.JamMongoRepository;
 import com.saraylg.matchmaker.matchmaker.repository.JamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 

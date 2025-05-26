@@ -4,7 +4,7 @@ import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
-import com.saraylg.matchmaker.matchmaker.mongo.UsuarioMongoRepository;
+import com.saraylg.matchmaker.matchmaker.repository.mongo.UsuarioMongoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
