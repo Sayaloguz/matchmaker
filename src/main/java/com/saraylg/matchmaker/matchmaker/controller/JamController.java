@@ -25,6 +25,8 @@ public class JamController {
 
     @GetMapping("/getByState/{state}")
     public List<JamOutputDTO> getJamByState(@PathVariable String state) {
+
+        System.out.println("Buscando jams con estado: " + state);
         return jamService.getJamsByState(state);
     }
 
