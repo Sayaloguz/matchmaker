@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.model;
+package com.saraylg.matchmaker.matchmaker.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GenericResponseEntity<T> {
+public class GenericResponseDTO<T> {
 
     private String message;
 

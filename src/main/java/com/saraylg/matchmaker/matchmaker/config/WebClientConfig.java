@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker;
+package com.saraylg.matchmaker.matchmaker.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,13 +9,13 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
-    /** WebClient genérico (ya lo usas en otras partes) */
+    /** WebClient genérico  */
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
         return builder.build();
     }
 
-    /** WebClient para la Web API oficial (p. ej. GetAppList) */
+    /** WebClient Steam para GetAppList) */
     @Bean(name = "steamWebClient")
     public WebClient steamWebClient() {
         HttpClient httpClient = HttpClient.create().compress(true);
@@ -28,7 +28,7 @@ public class WebClientConfig {
                 .build();
     }
 
-    /** WebClient para la Store API (appdetails) */
+    /** WebClient Steam para appdetails */
     @Bean(name = "storeWebClient")
     public WebClient storeWebClient() {
         HttpClient httpClient = HttpClient.create().compress(true);

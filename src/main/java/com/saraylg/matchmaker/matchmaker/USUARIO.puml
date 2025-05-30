@@ -1,0 +1,98 @@
+@startuml
+top to bottom direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ==== Controller ====
+package "Controller" {
+    class UsuarioController {
+        - usuarioService: UsuarioService
+        + getAllUsuarios(): List<UsuarioOutputDTO>
+        + getUsuarioBySteamId(steamId: String): UsuarioOutputDTO
+        + createUsuario(usuarioInputDTO: UsuarioInputDTO): UsuarioOutputDTO
+        + updateUsuario(usuarioInputDTO: UsuarioInputDTO): UsuarioOutputDTO
+        + deleteUsuario(steamId: String): String
+    }
+}
+
+' ==== Service ====
+package "Service" {
+    class UsuarioService {
+        - usuarioRepository: UsuarioRepository
+        + getAllUsuarios(): List<UsuarioOutputDTO>
+        + getUsuarioBySteamId(steamId: String): UsuarioOutputDTO
+        + createUsuario(usuarioInputDTO: UsuarioInputDTO): UsuarioOutputDTO
+        + updateUsuario(usuarioInputDTO: UsuarioInputDTO): UsuarioOutputDTO
+        + deleteUsuario(steamId: String): String
+    }
+}
+
+' ==== Repository ====
+package "Repository" {
+    class UsuarioRepository {
+        - usuarioMongoRepository: UsuarioMongoRepository
+        + getAllUsuarios(): List<UsuarioOutputDTO>
+        + getUsuarioBySteamId(steamId: String): UsuarioOutputDTO
+        + createUsuario(usuarioInputDTO: UsuarioInputDTO): UsuarioOutputDTO
+        + updateUsuario(usuarioInputDTO: UsuarioInputDTO): UsuarioOutputDTO
+        + deleteUsuario(steamId: String): String
+    }
+
+    interface UsuarioMongoRepository {
+        + findAll(): List<UsuarioEntity>
+        + findBySteamId(steamId: String): Optional<UsuarioEntity>
+        + save(usuario: UsuarioEntity): UsuarioEntity
+        + deleteBySteamId(steamId: String): void
+    }
+}
+
+' ==== DTO ====
+package "DTO" {
+    class UsuarioInputDTO {
+        - steamId: String
+        - name: String
+        - profileUrl: String
+        - avatar: String
+        - timeCreated: String
+    }
+
+    class UsuarioOutputDTO {
+        - steamId: String
+        - name: String
+        - profileUrl: String
+        - avatar: String
+        - timeCreated: String
+    }
+}
+
+' ==== Model ====
+package "Model" {
+    class UsuarioEntity {
+        - steamId: String
+        - name: String
+        - profileUrl: String
+        - avatar: String
+        - timeCreated: String
+    }
+}
+
+' ==== Relaciones ====
+UsuarioController --> UsuarioService
+UsuarioController --> UsuarioInputDTO
+UsuarioController --> UsuarioOutputDTO
+
+UsuarioService --> UsuarioRepository
+UsuarioService --> UsuarioInputDTO
+UsuarioService --> UsuarioOutputDTO
+
+UsuarioRepository --> UsuarioMongoRepository
+UsuarioRepository --> UsuarioInputDTO
+UsuarioRepository --> UsuarioOutputDTO
+UsuarioRepository --> UsuarioEntity
+
+UsuarioInputDTO --> UsuarioEntity
+UsuarioOutputDTO --> UsuarioEntity
+
+UsuarioMongoRepository --> UsuarioEntity
+
+@enduml

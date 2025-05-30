@@ -1,6 +1,6 @@
 package com.saraylg.matchmaker.matchmaker.exceptions;
 
-import com.saraylg.matchmaker.matchmaker.model.GenericResponseEntity;
+import com.saraylg.matchmaker.matchmaker.dto.GenericResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidJamOperationException.class)
-    public ResponseEntity<GenericResponseEntity<Object>>handleInvalidJamOperation(InvalidJamOperationException ex) {
+    public ResponseEntity<GenericResponseDTO<Object>>handleInvalidJamOperation(InvalidJamOperationException ex) {
 
-        GenericResponseEntity<Object> response = new GenericResponseEntity<>(
+        GenericResponseDTO<Object> response = new GenericResponseDTO<>(
                 "Operación de la jam no permitida",
                 String.valueOf(HttpStatus.FORBIDDEN.value()),
                 null
@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PlayerAlreadyJoinedException.class)
-    public ResponseEntity<GenericResponseEntity<Object>> handlePlayerAlreadyJoined(PlayerAlreadyJoinedException ex) {
-        GenericResponseEntity<Object> response = new GenericResponseEntity<>(
+    public ResponseEntity<GenericResponseDTO<Object>> handlePlayerAlreadyJoined(PlayerAlreadyJoinedException ex) {
+        GenericResponseDTO<Object> response = new GenericResponseDTO<>(
                 "El/la jugador/a se encuentra ya en la jam",
                 String.valueOf(HttpStatus.CONFLICT.value()),
                 null
@@ -32,8 +32,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(JamNotFoundException.class)
-    public ResponseEntity<GenericResponseEntity<Object>> handleJamNotFound(JamNotFoundException ex) {
-        GenericResponseEntity<Object> response = new GenericResponseEntity<>(
+    public ResponseEntity<GenericResponseDTO<Object>> handleJamNotFound(JamNotFoundException ex) {
+        GenericResponseDTO<Object> response = new GenericResponseDTO<>(
                 "Jam no encontrada",
                 String.valueOf(HttpStatus.NOT_FOUND.value()),
                 null
@@ -44,9 +44,9 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(PlayerNotFoundInJamException.class)
-    public ResponseEntity<GenericResponseEntity<Object>> handlePlayerNotFound(PlayerNotFoundInJamException ex) {
+    public ResponseEntity<GenericResponseDTO<Object>> handlePlayerNotFound(PlayerNotFoundInJamException ex) {
 
-        GenericResponseEntity<Object> response = new GenericResponseEntity<>(
+        GenericResponseDTO<Object> response = new GenericResponseDTO<>(
                 "Jugador/a no encontrado/a en la jam",
                 String.valueOf(HttpStatus.NOT_FOUND.value()),
                 null
@@ -57,8 +57,8 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<GenericResponseEntity<Object>> handleGeneric(RuntimeException ex) {
-        GenericResponseEntity<Object> response = new GenericResponseEntity<>(
+    public ResponseEntity<GenericResponseDTO<Object>> handleGeneric(RuntimeException ex) {
+        GenericResponseDTO<Object> response = new GenericResponseDTO<>(
                 "Fallo en la petición",
                 String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 null

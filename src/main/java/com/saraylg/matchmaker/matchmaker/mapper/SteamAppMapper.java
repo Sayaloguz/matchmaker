@@ -1,6 +1,7 @@
 package com.saraylg.matchmaker.matchmaker.mapper;
 
 import com.saraylg.matchmaker.matchmaker.dto.SteamAppDetailsResponse;
+import com.saraylg.matchmaker.matchmaker.dto.SteamAppOutputDto;
 import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,4 +27,6 @@ public interface SteamAppMapper {
                 .map(SteamAppDetailsResponse.Category::getDescription)
                 .collect(Collectors.toList());
     }
+
+    SteamAppOutputDto toOutput(SteamAppEntity steamAppEntity);
 }

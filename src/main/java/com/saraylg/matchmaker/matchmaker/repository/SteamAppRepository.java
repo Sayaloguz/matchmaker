@@ -2,6 +2,7 @@ package com.saraylg.matchmaker.matchmaker.repository;
 
 import com.saraylg.matchmaker.matchmaker.dto.SteamAppDetailsResponse;
 import com.saraylg.matchmaker.matchmaker.dto.SteamAppListResponse;
+import com.saraylg.matchmaker.matchmaker.dto.SteamAppOutputDto;
 import com.saraylg.matchmaker.matchmaker.mapper.SteamAppMapper;
 import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.SteamAppMongoRepository;
@@ -14,11 +15,13 @@ import reactor.util.retry.Retry;
 
 import java.io.*;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -141,16 +144,25 @@ public class SteamAppRepository {
 
     // Devolución de datos desde la BBDD
 
-    public List<SteamAppEntity> findAll() {
-        return repo.findAll();
+    public List<SteamAppOutputDto> findAll() {
+        List<SteamAppEntity> apps = repo.findAll();
+        return apps.stream()
+                .map(mapper::toOutput)
+                .collect(Collectors.toList());
     }
 
-    public Optional<SteamAppEntity> findByAppid(Long appid) {
-        return repo.findByAppid(appid);
+
+    public Optional<SteamAppOutputDto> findByAppid(Long appid) {
+        return repo.findByAppid(appid)
+                .map(mapper::toOutput);
     }
 
-    public List<SteamAppEntity> findByName(String name) {
-        return repo.findByNameRegexIgnoreCase(".*" + name + ".*");
+
+    public List<SteamAppOutputDto> findByName(String name) {
+        List<SteamAppEntity> apps = repo.findByNameRegexIgnoreCase(".*" + name + ".*");
+        return apps.stream()
+                .map(mapper::toOutput)
+                .collect(Collectors.toList());
     }
 
 }

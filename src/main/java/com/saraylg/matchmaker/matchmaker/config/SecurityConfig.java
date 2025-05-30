@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker;
+package com.saraylg.matchmaker.matchmaker.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

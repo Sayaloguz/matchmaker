@@ -1,0 +1,50 @@
+@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+' ==== Paquete exceptions ====
+package "exceptions" {
+    class GlobalExceptionHandler {
+        + handleInvalidJamOperation(ex: InvalidJamOperationException)
+        + handlePlayerAlreadyJoined(ex: PlayerAlreadyJoinedException)
+        + handleJamNotFound(ex: JamNotFoundException)
+        + handlePlayerNotFound(ex: PlayerNotFoundInJamException)
+        + handleGeneric(ex: RuntimeException)
+    }
+
+    class InvalidJamOperationException {
+        + InvalidJamOperationException(message: String)
+    }
+
+    class PlayerAlreadyJoinedException {
+        + PlayerAlreadyJoinedException(message: String)
+    }
+
+    class JamNotFoundException {
+        + JamNotFoundException(message: String)
+    }
+
+    class PlayerNotFoundInJamException {
+        + PlayerNotFoundInJamException(message: String)
+    }
+}
+
+' ==== Paquete dto ====
+package "dto" {
+    class GenericResponseDTO<T> {
+        - message: String
+        - code: String
+        - data: T
+    }
+}
+
+' ==== Relaciones ====
+GlobalExceptionHandler --> InvalidJamOperationException
+GlobalExceptionHandler --> PlayerAlreadyJoinedException
+GlobalExceptionHandler --> JamNotFoundException
+GlobalExceptionHandler --> PlayerNotFoundInJamException
+GlobalExceptionHandler --> GenericResponseDTO
+
+@enduml

@@ -1,8 +1,10 @@
 package com.saraylg.matchmaker.matchmaker.controller;
 
 import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
-import com.saraylg.matchmaker.matchmaker.service.JwtService;
-import com.saraylg.matchmaker.matchmaker.service.UsuarioService;
+import com.saraylg.matchmaker.matchmaker.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,115 +13,48 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.StringJoiner;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@Tag(name = "Autenticación", description = "Endpoints para autenticación con Steam y gestión de sesiones")
 public class AuthController {
 
-    private final UsuarioService usuariosService;
-    private final JwtService jwtService;
+    private final AuthService authService;
 
+    @Operation(summary = "Redirige al login de Steam")
     @GetMapping("/steam/login")
-    public void steamLogin(HttpServletResponse response) throws IOException {
-        String steamUrl = "https://steamcommunity.com/openid/login?" +
-                "openid.ns=http://specs.openid.net/auth/2.0&" +
-                "openid.mode=checkid_setup&" +
-                "openid.return_to=http://localhost:8080/auth/steam/callback&" +
-                "openid.realm=http://localhost:8080&" +
-                "openid.identity=http://specs.openid.net/auth/2.0/identifier_select&" +
-                "openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select";
-
-        response.sendRedirect(steamUrl);
+    public void loginSteam(HttpServletResponse response) throws IOException
+    {
+        authService.redirigirSteam(response);
     }
 
+
+    @Operation(summary = "Procesa el callback de Steam después del login")
     @GetMapping("/steam/callback")
-    public void steamCallback(@RequestParam Map<String, String> params, HttpServletResponse servletResponse) throws IOException {
-        System.out.println("Callback de Steam recibido: " + params);
-
-        if (verificarRespuestaSteam(params)) {
-            String claimedId = params.get("openid.claimed_id");
-            String steamId = claimedId.substring(claimedId.lastIndexOf("/") + 1);
-
-            UsuarioOutputDTO user = usuariosService.getAndSavePlayer(steamId);
-            String token = jwtService.generateToken(user);
-
-            Cookie cookie = new Cookie("jwt", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false); // Cambia a true si usas HTTPS
-            cookie.setPath("/");
-            cookie.setMaxAge(86400); // 1 día en segundos
-
-            servletResponse.addCookie(cookie);
-            servletResponse.sendRedirect("http://localhost:3000/perfil?id=" + steamId);
-        } else {
-            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
-        }
+    public void callbackSteam(
+            @Parameter(description = "Parámetros de autenticación OpenID")
+            @RequestParam Map<String, String> params, HttpServletResponse response) throws IOException
+    {
+        authService.steamCallback(params, response);
     }
 
 
-    private boolean verificarRespuestaSteam(Map<String, String> params) {
-        try {
-            URL url = new URL("https://steamcommunity.com/openid/login");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-
-            StringJoiner body = new StringJoiner("&");
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                body.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8"));
-            }
-            body.add("openid.mode=check_authentication");
-
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(body.toString().getBytes());
-            }
-
-            try (Scanner scanner = new Scanner(conn.getInputStream())) {
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    if (line.contains("is_valid:true")) {
-                        return true;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
+    @Operation(summary = "Obtiene los datos del usuario autenticado desde el token JWT")
     @GetMapping("/me")
-    public ResponseEntity<UsuarioOutputDTO> me(@CookieValue(name = "jwt", required = false) String token) {
-        if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        try {
-            UsuarioOutputDTO user = jwtService.parseToken(token);
-            return ResponseEntity.ok(user);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<UsuarioOutputDTO> cookieMe(
+            @Parameter(description = "JWT almacenado en una cookie")
+            @CookieValue(name = "jwt", required = false) String token
+    ) {
+        return authService.getUsuarioDesdeToken(token);
     }
 
-    @GetMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("jwt", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
 
-        response.addCookie(cookie);
+    @Operation(summary = "Cerrar sesión del usuario eliminando la cookie JWT")
+    @GetMapping("/logout")
+    public ResponseEntity<Void> salir(HttpServletResponse response) {
+        authService.cerrarSesion(response);
         return ResponseEntity.noContent().build(); // 204
     }
-
 }

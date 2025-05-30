@@ -1,0 +1,163 @@
+@startuml
+top to bottom direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ==== Controller ====
+package "Controller" {
+    class SteamAppController {
+        - service: SteamAppService
+        + list(): List<SteamAppOutputDto>
+        + getByAppId(appid: Long): ResponseEntity<SteamAppOutputDto>
+        + sync(): ResponseEntity<String>
+        + searchByName(title: String): List<SteamAppOutputDto>
+    }
+}
+
+' ==== Service ====
+package "Service" {
+    class SteamAppService {
+        - repository: SteamAppRepository
+        + syncCatalog(): long
+        + findAll(): List<SteamAppOutputDto>
+        + findByAppid(appid: Long): Optional<SteamAppOutputDto>
+        + findByName(name: String): List<SteamAppOutputDto>
+    }
+}
+
+' ==== Repository ====
+package "Repository" {
+    class SteamAppRepository {
+        - repo: SteamAppMongoRepository
+        - steamWebClient: WebClient
+        - storeWebClient: WebClient
+        - mapper: SteamAppMapper
+        + syncCatalog(): long
+        + findAll(): List<SteamAppOutputDto>
+        + findByAppid(appid: Long): Optional<SteamAppOutputDto>
+        + findByName(name: String): List<SteamAppOutputDto>
+    }
+
+    interface SteamAppMongoRepository {
+        + findAll(): List<SteamAppEntity>
+        + findByAppid(appid: Long): Optional<SteamAppEntity>
+        + findByNameRegexIgnoreCase(name: String): List<SteamAppEntity>
+    }
+}
+
+' ==== Mapper ====
+package "Mapper" {
+    interface SteamAppMapper {
+        + toEntity(appid: Long, appDetails: AppDetails): SteamAppEntity
+        + toDto(entity: SteamAppEntity): SteamAppOutputDto
+    }
+}
+
+' ==== DTO ====
+package "DTO" {
+    class SteamApiResponse {
+        - response: SteamResponseDTO
+    }
+
+    class SteamResponseDTO {
+        - players: List<SteamPlayerDTO>
+    }
+
+    class SteamPlayerDTO {
+        - steamId: String
+        - name: String
+        - profileUrl: String
+        - avatar: String
+        - timeCreated: Long
+    }
+
+    class SteamAppListResponse {
+        - applist: AppList
+    }
+
+    class AppList {
+        - apps: List<App>
+    }
+
+    class App {
+        - appid: Long
+        - name: String
+    }
+
+    class AppDetails {
+        - success: boolean
+        - data: AppData
+    }
+
+    class AppData {
+        - type: String
+        - name: String
+        - shortDescription: String
+        - categories: List<Category>
+        - headerImage: String
+        - releaseDate: ReleaseDate
+    }
+
+    class ReleaseDate {
+        - comingSoon: boolean
+    }
+
+    class Category {
+        - description: String
+    }
+
+    class SteamAppOutputDto {
+        - appid: Long
+        - name: String
+        - shortDescription: String
+        - categories: List<String>
+        - headerImage: String
+        - lastUpdated: Instant
+    }
+}
+
+' ==== Model ====
+package "Model" {
+    class SteamAppEntity {
+        - appid: Long
+        - name: String
+        - shortDescription: String
+        - categories: List<String>
+        - headerImage: String
+        - lastUpdated: Instant
+    }
+}
+
+' ==== Relaciones ====
+SteamAppController --> SteamAppService
+SteamAppController --> SteamAppOutputDto
+
+SteamAppService --> SteamAppRepository
+SteamAppService --> SteamAppOutputDto
+
+SteamAppRepository --> SteamAppMongoRepository
+SteamAppRepository --> SteamAppMapper
+SteamAppRepository --> AppDetails
+SteamAppRepository --> SteamAppEntity
+SteamAppRepository --> SteamAppListResponse
+SteamAppRepository --> SteamApiResponse
+SteamAppRepository --> SteamAppOutputDto
+
+SteamAppMapper --> AppDetails
+SteamAppMapper --> AppData
+SteamAppMapper --> SteamAppEntity
+SteamAppMapper --> SteamAppOutputDto
+
+SteamApiResponse --> SteamResponseDTO
+SteamResponseDTO --> SteamPlayerDTO
+
+SteamAppListResponse --> AppList
+AppList --> App
+
+AppDetails --> AppData
+AppData --> Category
+AppData --> ReleaseDate
+
+SteamAppMongoRepository --> SteamAppEntity
+
+@enduml

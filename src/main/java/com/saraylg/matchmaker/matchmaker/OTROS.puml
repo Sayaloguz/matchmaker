@@ -1,0 +1,139 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+top to bottom direction
+
+' ==== DTOs ====
+package "dto" {
+    class SteamPlayerDTO {
+        - steamId: String
+        - name: String
+        - profileUrl: String
+        - avatar: String
+        - timeCreated: Long
+    }
+
+    class UsuarioOutputDTO {
+        - steamId: String
+        - name: String
+        - profileUrl: String
+        - avatar: String
+        - timeCreated: String
+    }
+
+    class UsuarioInputDTO {
+        - steamId: String
+        - name: String
+        - profileUrl: String
+        - avatar: String
+        - timeCreated: String
+    }
+
+    class JamInputDTO {
+        - title: String
+        - description: String
+        - game: SteamAppEntity
+        - jamDate: String
+        - jamTime: String
+        - state: JamState
+        - createdBy: UsuarioEntity
+        - createdAt: String
+        - maxPlayers: Integer
+        - players: ArrayList<UsuarioEntity>
+        - gameMode: GameMode
+        - voiceMode: VoiceMode
+        - language: Languages
+        - duration: String
+    }
+
+    class JamOutputDTO {
+        - id: String
+        - title: String
+        - description: String
+        - game: SteamAppEntity
+        - jamDate: String
+        - jamTime: String
+        - state: JamState
+        - createdBy: UsuarioEntity
+        - createdAt: String
+        - maxPlayers: Integer
+        - players: ArrayList<UsuarioEntity>
+        - gameMode: GameMode
+        - voiceMode: VoiceMode
+        - language: Languages
+    }
+}
+
+' ==== CONFIGURACIÓN ====
+package "config" {
+    class SecurityConfig {
+        +corsConfigurationSource(): void
+        +securityFilterChain(http): void
+    }
+
+    class WebClientConfig {
+        +webClient(builder): void
+        +steamWebClient(): void
+        +storeWebClient(): void
+    }
+}
+
+' ==== SERVICIOS ====
+package "service" {
+    class JwtService {
+        - jwtSecret: String
+        - key: Key
+        +init(): void
+        +generateToken(user: UsuarioOutputDTO): String
+        +parseToken(token: String): UsuarioOutputDTO
+    }
+
+    class UsuarioService {
+        - usuariosRepository
+        - usuarioMapper
+        - steamApiKey: String
+        - steamWebClient
+        +getPlayer(steamId: String): UsuarioOutputDTO
+        +getAndSavePlayer(steamId: String): UsuarioOutputDTO
+        +getAllUsers(): List<UsuarioOutputDTO>
+        +getUserById(steamId: String): UsuarioOutputDTO
+        +updateUser(steamId: String, dto: UsuarioInputDTO): UsuarioOutputDTO
+        +deleteUser(steamId: String): String
+        +getOrCreateUser(steamId: String): UsuarioOutputDTO
+        -fetchSteamPlayer(steamId: String): SteamPlayerDTO
+    }
+
+    class AuthService {
+        - usuarioService: UsuarioService
+        - jwtService: JwtService
+        +redirigirSteam(response: HttpServletResponse): void
+        +steamCallback(params: Map<String, String>, response: HttpServletResponse): void
+        +getUsuarioDesdeToken(token: String): ResponseEntity<UsuarioOutputDTO>
+        +cerrarSesion(response: HttpServletResponse): void
+        -extraerSteamId(claimedId: String): String
+        -verificarSteam(params: Map<String, String>): boolean
+    }
+
+    AuthService --> JwtService
+    AuthService --> UsuarioService
+    AuthService --> UsuarioOutputDTO
+    UsuarioService --> SteamPlayerDTO
+    UsuarioService --> UsuarioInputDTO
+    UsuarioService --> UsuarioOutputDTO
+}
+
+' ==== CONTROLADOR ====
+package "controller" {
+    class AuthController {
+        - authService: service.AuthService
+        +loginSteam(response): void
+        +callbackSteam(params, response): void
+        +cookieMe(token): ResponseEntity<UsuarioOutputDTO>
+        +salir(response): ResponseEntity<Void>
+    }
+
+    AuthController --> service.AuthService
+    AuthController --> UsuarioOutputDTO
+}
+
+@enduml

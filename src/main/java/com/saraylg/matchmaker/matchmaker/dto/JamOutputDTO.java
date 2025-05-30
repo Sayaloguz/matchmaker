@@ -46,4 +46,6 @@ public class JamOutputDTO {
 
     private Languages language;
 
+    private String duration;
+
 }

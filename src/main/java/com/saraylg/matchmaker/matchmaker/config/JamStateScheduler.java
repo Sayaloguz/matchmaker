@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker;
+package com.saraylg.matchmaker.matchmaker.config;
 
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
@@ -17,7 +17,6 @@ public class JamStateScheduler {
 
     private final JamRepository jamRepository;
     private final JamMongoRepository jamMongoRepository;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     // Ejecuta cada 6 horas
     @Scheduled(fixedRate = 21600000) // Cada 6 horas
