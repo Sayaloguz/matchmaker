@@ -99,10 +99,30 @@ public class JamRepository {
         JamEntity existing = jamMongoRepository.findById(jamModifyDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Jam no encontrada"));
 
-        existing.setTitle(jamModifyDTO.getTitle());
-        existing.setGameMode(jamModifyDTO.getGameMode());
-        existing.setJamDate(jamModifyDTO.getJamDate());
-        existing.setDuration(jamModifyDTO.getDuration());
+        if(jamModifyDTO.getTitle() != null && !jamModifyDTO.getTitle().isEmpty()) {
+            existing.setTitle(jamModifyDTO.getTitle());
+        }
+        if (jamModifyDTO.getDescription() != null && !jamModifyDTO.getDescription().isEmpty()) {
+            existing.setDescription(jamModifyDTO.getDescription());
+        }
+        if (jamModifyDTO.getJamDate() != null && !jamModifyDTO.getJamDate().isEmpty()) {
+            existing.setJamDate(jamModifyDTO.getJamDate());
+        }
+        if (jamModifyDTO.getJamTime() != null && !jamModifyDTO.getJamTime().isEmpty()) {
+            existing.setJamTime(jamModifyDTO.getJamTime());
+        }
+        if (jamModifyDTO.getMaxPlayers() != null) {
+            existing.setMaxPlayers(jamModifyDTO.getMaxPlayers());
+        }
+        if (jamModifyDTO.getVoiceMode() != null) {
+            existing.setVoiceMode(jamModifyDTO.getVoiceMode());
+        }
+        if (jamModifyDTO.getLanguage() != null) {
+            existing.setLanguage(jamModifyDTO.getLanguage());
+        }
+        if (jamModifyDTO.getDuration() != null && !jamModifyDTO.getDuration().isEmpty()) {
+            existing.setDuration(jamModifyDTO.getDuration());
+        }
 
         return jamMapper.jamToOutputDto(jamMongoRepository.save(existing));
     }
