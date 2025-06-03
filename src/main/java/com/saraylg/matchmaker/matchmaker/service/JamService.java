@@ -93,12 +93,12 @@ public class JamService {
 
     // Obtener jams que ha hecho un usuario y en las que participa
 
-    @GetMapping("/byCreator/{id}")
+    @GetMapping("/byCreator/")
     public List<JamOutputDTO> getJamsByCreator(String id) {
         return jamsRepository.getJamsByCreator(id);
     }
 
-    @GetMapping("/byUser/{id}")
+    @GetMapping("/byUser/")
     public List<JamOutputDTO> getJamsByUser(String id) {
         return jamsRepository.getJamsByUser(id);
     }
