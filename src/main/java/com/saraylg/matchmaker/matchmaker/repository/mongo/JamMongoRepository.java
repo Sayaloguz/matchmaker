@@ -14,5 +14,10 @@ public interface JamMongoRepository extends MongoRepository<JamEntity, String> {
     List<JamEntity> findByPlayers_SteamId(String steamId);
 
     List<JamEntity> findByStateIn(List<JamState> states);
+    List<JamEntity> findByTitleContainingIgnoreCase(String title);
+
+    // Buscar por título + estado
+    List<JamEntity> findByTitleContainingIgnoreCaseAndState(String title, JamState state);
+
 
 }

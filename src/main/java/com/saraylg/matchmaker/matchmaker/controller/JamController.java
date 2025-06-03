@@ -45,6 +45,12 @@ public class JamController {
             return jamService.getJamsByTitle(title);
     }
 
+    @Operation(summary = " Buscar jams abiertas por título")
+    @GetMapping("/openByTitle")
+    public List<JamOutputDTO> getOpenByTitle(@RequestParam String title) {
+        return jamService.getOpenJamsByTitle(title);
+    }
+
     /* public List<JamOutputDTO> getByTitle(@RequestBody TitleInputDTO titleInputDto) {
         String title = titleInputDto.getTitle();
         return jamService.getJamsByTitle(title);
@@ -74,7 +80,7 @@ public class JamController {
     }
 
     @Operation(summary = "Modificar una jam existente")
-    @PostMapping("/modify")
+    @PutMapping("/modify")
     public JamOutputDTO modifyJam(@Valid @RequestBody JamModifyDTO jamModifyDTO) {
         return jamService.modifyJam(jamModifyDTO);
     }

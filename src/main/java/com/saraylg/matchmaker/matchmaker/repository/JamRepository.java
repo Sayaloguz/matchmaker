@@ -75,11 +75,29 @@ public class JamRepository {
     }
 
     // No actualizamos el estado aquí
+    /*
     public Optional<JamEntity> getJamsByTitle(String title) {
         return jamMongoRepository.findAll().stream()
                 .filter(jam -> jam.getTitle().toLowerCase().contains(title.toLowerCase()))
                 .findFirst();
     }
+
+    public Optional<JamEntity> getOpenJamsByTitle(String title) {
+        return jamMongoRepository.findAll().stream()
+                .filter(jam -> jam.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .filter(jam -> jam.getState() == JamState.OPEN)
+                .findFirst();
+    }
+    */
+
+    public List<JamEntity> getJamsByTitle(String title) {
+        return jamMongoRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    public List<JamEntity> getOpenJamsByTitle(String title) {
+        return jamMongoRepository.findByTitleContainingIgnoreCaseAndState(title, JamState.OPEN);
+    }
+
 
     public List<JamEntity> getJamByState(String state) {
         return jamMongoRepository.findAll().stream()
@@ -123,6 +141,10 @@ public class JamRepository {
         if (jamModifyDTO.getDuration() != null && !jamModifyDTO.getDuration().isEmpty()) {
             existing.setDuration(jamModifyDTO.getDuration());
         }
+        if (jamModifyDTO.getGameMode() != null) {
+            existing.setGameMode(jamModifyDTO.getGameMode());
+        }
+
 
         return jamMapper.jamToOutputDto(jamMongoRepository.save(existing));
     }

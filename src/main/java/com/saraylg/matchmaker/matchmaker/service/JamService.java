@@ -49,13 +49,32 @@ public class JamService {
                 .orElseThrow(() -> new RuntimeException("Jam no encontrada"));
     }
 
+    /*
     public List<JamOutputDTO> getJamsByTitle(String title) {
         return jamsRepository.getJamsByTitle(title)
                 .map(jamMapper::jamToOutputDto)
                 .stream().toList();
     }
 
-    public List<JamOutputDTO> getJamsByMode(String mode) {
+    public List<JamOutputDTO> getOpenJamsByTitle(String title) {
+        return jamsRepository.getOpenJamsByTitle(title)
+                .map(jamMapper::jamToOutputDto)
+                .stream().toList();
+    }
+    */
+    public List<JamOutputDTO> getJamsByTitle(String title) {
+        return jamsRepository.getJamsByTitle(title).stream()
+                .map(jamMapper::jamToOutputDto)
+                .toList();
+    }
+
+    public List<JamOutputDTO> getOpenJamsByTitle(String title) {
+        return jamsRepository.getOpenJamsByTitle(title).stream()
+                .map(jamMapper::jamToOutputDto)
+                .toList();
+    }
+
+        public List<JamOutputDTO> getJamsByMode(String mode) {
         return jamsRepository.getJamByMode(mode).stream()
                 .map(jamMapper::jamToOutputDto)
                 .toList();
@@ -69,6 +88,8 @@ public class JamService {
     public JamOutputDTO removePlayerFromJam(String jamId, String steamIdToRemove) {
         return jamsRepository.removePlayerFromJam(jamId, steamIdToRemove);
     }
+
+
 
     // Obtener jams que ha hecho un usuario y en las que participa
 
