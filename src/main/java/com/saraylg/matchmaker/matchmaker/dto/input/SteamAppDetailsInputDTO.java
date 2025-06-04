@@ -1,9 +1,8 @@
-package com.saraylg.matchmaker.matchmaker.dto;
+package com.saraylg.matchmaker.matchmaker.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Representa la respuesta del endpoint /appdetails de Steam.
@@ -11,7 +10,7 @@ import java.util.Map;
  * Nos quedamos solo con los campos relevantes: nombre, descripción, tipo, categorías, imagen y si es lanzamiento futuro.
  */
 @Data
-public class SteamAppDetailsResponse extends java.util.HashMap<String, SteamAppDetailsResponse.AppDetails> {
+public class SteamAppDetailsInputDTO extends java.util.HashMap<String, SteamAppDetailsInputDTO.AppDetails> {
 
     @Data
     public static class AppDetails {

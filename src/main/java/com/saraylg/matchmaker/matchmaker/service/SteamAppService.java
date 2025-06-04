@@ -1,7 +1,6 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
-import com.saraylg.matchmaker.matchmaker.dto.SteamAppOutputDto;
-import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
+import com.saraylg.matchmaker.matchmaker.dto.output.SteamAppOutputDTO;
 import com.saraylg.matchmaker.matchmaker.repository.SteamAppRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,15 +18,15 @@ public class SteamAppService {
         return repository.syncCatalog();
     }
 
-    public List<SteamAppOutputDto> findAll() {
+    public List<SteamAppOutputDTO> findAll() {
         return repository.findAll();
     }
 
-    public Optional<SteamAppOutputDto> findByAppid(Long appid) {
+    public Optional<SteamAppOutputDTO> findByAppid(Long appid) {
         return repository.findByAppid(appid);
     }
 
-    public List<SteamAppOutputDto> findByName(String name) {
+    public List<SteamAppOutputDTO> findByName(String name) {
         return repository.findByName(name);
     }
 }

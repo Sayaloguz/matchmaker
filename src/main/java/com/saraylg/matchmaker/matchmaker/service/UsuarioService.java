@@ -1,9 +1,9 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
-import com.saraylg.matchmaker.matchmaker.dto.SteamApiResponse;
-import com.saraylg.matchmaker.matchmaker.dto.SteamPlayerDTO;
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.SteamPlayerInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.internal.SteamApiResponse;
+import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
 import com.saraylg.matchmaker.matchmaker.repository.UsuarioRepository;
@@ -39,7 +39,7 @@ public class UsuarioService {
         if (userOpt.isPresent()) {
             return usuarioMapper.entityToOutputDto(userOpt.get());
         } else {
-            SteamPlayerDTO steamPlayer = fetchSteamPlayer(steamId);
+            SteamPlayerInputDTO steamPlayer = fetchSteamPlayer(steamId);
             UsuarioInputDTO dto = usuarioMapper.steamPlayerToDto(steamPlayer);
             usuariosRepository.saveUser(dto);
             return usuarioMapper.dtoToOutputDto(dto);
@@ -57,7 +57,7 @@ public class UsuarioService {
             return usuarioMapper.entityToOutputDto(existing.get());
         }
 
-        SteamPlayerDTO steamPlayer = fetchSteamPlayer(steamId);
+        SteamPlayerInputDTO steamPlayer = fetchSteamPlayer(steamId);
         UsuarioInputDTO dto = usuarioMapper.steamPlayerToDto(steamPlayer);
         usuariosRepository.saveUser(dto);
         return usuarioMapper.dtoToOutputDto(dto);
@@ -104,7 +104,7 @@ public class UsuarioService {
      * Método interno para consultar a la Steam Web API y obtener los datos de un jugador.
      * ✅ Usa la API de Steam.
      */
-    private SteamPlayerDTO fetchSteamPlayer(String steamId) {
+    private SteamPlayerInputDTO fetchSteamPlayer(String steamId) {
         try {
             SteamApiResponse response = steamWebClient.get()
                     .uri(uriBuilder -> uriBuilder

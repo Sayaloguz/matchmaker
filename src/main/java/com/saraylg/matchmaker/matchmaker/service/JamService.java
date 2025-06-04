@@ -1,15 +1,14 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
-import com.saraylg.matchmaker.matchmaker.dto.JamInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.JamModifyDTO;
-import com.saraylg.matchmaker.matchmaker.dto.JamOutputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.JamOutputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
 import com.saraylg.matchmaker.matchmaker.repository.JamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 

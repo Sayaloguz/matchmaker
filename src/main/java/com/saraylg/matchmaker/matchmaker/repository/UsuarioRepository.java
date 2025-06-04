@@ -1,7 +1,7 @@
 package com.saraylg.matchmaker.matchmaker.repository;
 
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.UsuarioMongoRepository;

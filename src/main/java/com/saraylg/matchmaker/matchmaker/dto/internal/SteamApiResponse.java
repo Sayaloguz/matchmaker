@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.dto;
+package com.saraylg.matchmaker.matchmaker.dto.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,6 @@ import lombok.Setter;
 public class SteamApiResponse {
 
     @JsonProperty("response")
-    private SteamResponseDTO response;
+    private SteamPlayerListResponse response;
 
 }

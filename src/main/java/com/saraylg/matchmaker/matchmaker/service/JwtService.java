@@ -1,6 +1,6 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

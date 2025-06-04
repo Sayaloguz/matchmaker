@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.dto;
+package com.saraylg.matchmaker.matchmaker.dto.input;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

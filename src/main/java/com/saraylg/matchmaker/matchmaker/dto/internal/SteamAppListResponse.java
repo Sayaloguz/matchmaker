@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.dto;
+package com.saraylg.matchmaker.matchmaker.dto.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

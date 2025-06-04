@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.dto;
+package com.saraylg.matchmaker.matchmaker.dto.output;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

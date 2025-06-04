@@ -1,6 +1,7 @@
-package com.saraylg.matchmaker.matchmaker.dto;
+package com.saraylg.matchmaker.matchmaker.dto.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.saraylg.matchmaker.matchmaker.dto.input.SteamPlayerInputDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SteamResponseDTO {
+public class SteamPlayerListResponse {
 
     @JsonProperty("players")
-    private List<SteamPlayerDTO> players;
+    private List<SteamPlayerInputDTO> players;
 }

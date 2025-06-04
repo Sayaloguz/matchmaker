@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.dto;
+package com.saraylg.matchmaker.matchmaker.dto.input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SteamPlayerDTO {
+public class SteamPlayerInputDTO {
 
     @JsonProperty("steamid")
     private String steamId;

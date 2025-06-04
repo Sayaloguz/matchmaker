@@ -1,6 +1,6 @@
 package com.saraylg.matchmaker.matchmaker.exceptions;
 
-import com.saraylg.matchmaker.matchmaker.dto.GenericResponseDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.GenericResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

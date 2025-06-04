@@ -1,9 +1,9 @@
 package com.saraylg.matchmaker.matchmaker.repository;
 
-import com.saraylg.matchmaker.matchmaker.dto.JamInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.JamModifyDTO;
-import com.saraylg.matchmaker.matchmaker.dto.JamOutputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.JamOutputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.InvalidJamOperationException;
 import com.saraylg.matchmaker.matchmaker.exceptions.PlayerAlreadyJoinedException;
 import com.saraylg.matchmaker.matchmaker.exceptions.JamNotFoundException;

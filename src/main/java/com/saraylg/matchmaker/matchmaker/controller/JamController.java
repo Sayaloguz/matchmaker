@@ -1,6 +1,9 @@
 package com.saraylg.matchmaker.matchmaker.controller;
 
-import com.saraylg.matchmaker.matchmaker.dto.*;
+import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.JamOutputDTO;
 import com.saraylg.matchmaker.matchmaker.service.JamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

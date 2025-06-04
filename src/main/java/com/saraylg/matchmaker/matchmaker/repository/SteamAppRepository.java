@@ -1,8 +1,8 @@
 package com.saraylg.matchmaker.matchmaker.repository;
 
-import com.saraylg.matchmaker.matchmaker.dto.SteamAppDetailsResponse;
-import com.saraylg.matchmaker.matchmaker.dto.SteamAppListResponse;
-import com.saraylg.matchmaker.matchmaker.dto.SteamAppOutputDto;
+import com.saraylg.matchmaker.matchmaker.dto.input.SteamAppDetailsInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.internal.SteamAppListResponse;
+import com.saraylg.matchmaker.matchmaker.dto.output.SteamAppOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.SteamAppMapper;
 import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.SteamAppMongoRepository;
@@ -15,7 +15,6 @@ import reactor.util.retry.Retry;
 
 import java.io.*;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -95,15 +94,15 @@ public class SteamAppRepository {
         return storeWebClient.get()
                 .uri("/appdetails?appids={id}", appid)
                 .retrieve()
-                .bodyToMono(SteamAppDetailsResponse.class)
+                .bodyToMono(SteamAppDetailsInputDTO.class)
                 .retryWhen(Retry.backoff(3, Duration.ofSeconds(10)))
                 .flatMap(resp -> {
-                    SteamAppDetailsResponse.AppDetails d = resp.get(String.valueOf(appid));
+                    SteamAppDetailsInputDTO.AppDetails d = resp.get(String.valueOf(appid));
                     if (d == null || d.getData() == null) return Mono.empty();
 
                     boolean isGame = "game".equalsIgnoreCase(d.getData().getType());
                     boolean comingSoon = Optional.ofNullable(d.getData().getReleaseDate())
-                            .map(SteamAppDetailsResponse.ReleaseDate::isComingSoon)
+                            .map(SteamAppDetailsInputDTO.ReleaseDate::isComingSoon)
                             .orElse(false);
                     boolean isAdultOnly = Optional.ofNullable(d.getData().getCategories())
                             .map(cats -> cats.stream()
@@ -144,7 +143,7 @@ public class SteamAppRepository {
 
     // Devolución de datos desde la BBDD
 
-    public List<SteamAppOutputDto> findAll() {
+    public List<SteamAppOutputDTO> findAll() {
         List<SteamAppEntity> apps = repo.findAll();
         return apps.stream()
                 .map(mapper::toOutput)
@@ -152,13 +151,13 @@ public class SteamAppRepository {
     }
 
 
-    public Optional<SteamAppOutputDto> findByAppid(Long appid) {
+    public Optional<SteamAppOutputDTO> findByAppid(Long appid) {
         return repo.findByAppid(appid)
                 .map(mapper::toOutput);
     }
 
 
-    public List<SteamAppOutputDto> findByName(String name) {
+    public List<SteamAppOutputDTO> findByName(String name) {
         List<SteamAppEntity> apps = repo.findByNameRegexIgnoreCase(".*" + name + ".*");
         return apps.stream()
                 .map(mapper::toOutput)

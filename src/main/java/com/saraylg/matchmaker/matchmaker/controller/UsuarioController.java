@@ -1,7 +1,7 @@
 package com.saraylg.matchmaker.matchmaker.controller;
 
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.UsuarioOutputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

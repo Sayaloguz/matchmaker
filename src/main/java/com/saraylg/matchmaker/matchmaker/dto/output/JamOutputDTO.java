@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.dto;
+package com.saraylg.matchmaker.matchmaker.dto.output;
 
 import com.saraylg.matchmaker.matchmaker.model.*;
 import com.saraylg.matchmaker.matchmaker.model.enums.GameMode;
