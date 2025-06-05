@@ -18,6 +18,7 @@ import java.util.List;
 @Tag(name = "Usuarios", description = "Endpoints relacionados con usuarios registrados")
 public class UsuarioController {
 
+
     private final UsuarioService usuariosService;
 
     @Operation(summary = "Obtener datos de jugador por Steam ID (fuente externa)")
@@ -45,18 +46,18 @@ public class UsuarioController {
     }
 
     @Operation(summary = "Actualizar datos del usuario")
-    @PutMapping("/update/{steamId}")
+    @PutMapping("/{steamId}")
     public UsuarioOutputDTO updateUser(
-            @PathVariable String steamId,
-            @RequestBody @Valid UsuarioInputDTO usuarioDTO
+            @PathVariable String steamId
     ) {
-        return usuariosService.updateUser(steamId, usuarioDTO);
+        return usuariosService.updateUser(steamId);
     }
 
     @Operation(summary = "Eliminar un usuario por Steam ID")
-    @DeleteMapping("/delete/{steamId}")
+    @DeleteMapping("/{steamId}")
     public String deleteUser(@PathVariable String steamId) {
         return usuariosService.deleteUser(steamId);
     }
+
 
 }

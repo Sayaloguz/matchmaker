@@ -66,4 +66,16 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvitationNotFoundException.class)
+    public ResponseEntity<GenericResponseDTO<Object>> handleInvitationNotFound(InvitationNotFoundException ex) {
+        GenericResponseDTO<Object> response = new GenericResponseDTO<>(
+                ex.getMessage(),
+                String.valueOf(HttpStatus.NOT_FOUND.value()),
+                null
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 }

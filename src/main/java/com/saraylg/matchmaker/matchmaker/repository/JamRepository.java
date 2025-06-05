@@ -33,6 +33,18 @@ public class JamRepository {
     private final UsuarioMapper usuarioMapper;
 
 
+    public void deleteAllJamsCreatedBy(String steamId) {
+        List<JamEntity> jams = jamMongoRepository.findByCreatedBy_SteamId(steamId);
+        jamMongoRepository.deleteAll(jams);
+    }
+
+    public void removePlayerFromAllJams(String steamId) {
+        List<JamEntity> jams = jamMongoRepository.findByPlayers_SteamId(steamId);
+        for (JamEntity jam : jams) {
+            removePlayerFromJam(jam.getId(), steamId);
+        }
+    }
+
     public void updateJamStateIfNeeded(JamEntity jam) {
         if (jam.getState() == JamState.FINISHED) return;
 
@@ -70,25 +82,8 @@ public class JamRepository {
         Optional<JamEntity> jamOpt = jamMongoRepository.findById(id);
         jamOpt.ifPresent(this::updateJamStateIfNeeded);
         return jamOpt;
-
-        //return jamMongoRepository.findById(id);
     }
 
-    // No actualizamos el estado aquí
-    /*
-    public Optional<JamEntity> getJamsByTitle(String title) {
-        return jamMongoRepository.findAll().stream()
-                .filter(jam -> jam.getTitle().toLowerCase().contains(title.toLowerCase()))
-                .findFirst();
-    }
-
-    public Optional<JamEntity> getOpenJamsByTitle(String title) {
-        return jamMongoRepository.findAll().stream()
-                .filter(jam -> jam.getTitle().toLowerCase().contains(title.toLowerCase()))
-                .filter(jam -> jam.getState() == JamState.OPEN)
-                .findFirst();
-    }
-    */
 
     public List<JamEntity> getJamsByTitle(String title) {
         return jamMongoRepository.findByTitleContainingIgnoreCase(title);
@@ -116,6 +111,12 @@ public class JamRepository {
     public JamOutputDTO modifyJam(JamModifyDTO jamModifyDTO) {
         JamEntity existing = jamMongoRepository.findById(jamModifyDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Jam no encontrada"));
+
+        if (jamModifyDTO.getMaxPlayers() != null &&
+                existing.getPlayers() != null &&
+                jamModifyDTO.getMaxPlayers() < existing.getPlayers().size()) {
+            throw new InvalidJamOperationException("No puedes establecer maxPlayers por debajo del número actual de jugadores.");
+        }
 
         if(jamModifyDTO.getTitle() != null && !jamModifyDTO.getTitle().isEmpty()) {
             existing.setTitle(jamModifyDTO.getTitle());
@@ -145,6 +146,13 @@ public class JamRepository {
             existing.setGameMode(jamModifyDTO.getGameMode());
         }
 
+        int currentPlayers = existing.getPlayers() != null ? existing.getPlayers().size() : 0;
+        if (currentPlayers >= existing.getMaxPlayers()) {
+            existing.setState(JamState.FULL);
+        } else {
+            existing.setState(JamState.OPEN);
+        }
+
 
         return jamMapper.jamToOutputDto(jamMongoRepository.save(existing));
     }
@@ -161,24 +169,41 @@ public class JamRepository {
         JamEntity jam = jamMongoRepository.findById(jamId)
                 .orElseThrow(() -> new JamNotFoundException("Jam no encontrada"));
 
-        // Convertir el DTO a entidad
-        UsuarioEntity jugador = usuarioMapper.dtoToUsuariosEntity(jugadorDTO);
+        updateJamStateIfNeeded(jam);
 
-        // Evitar duplicados
+        // Verificar si la jam está abierta
+        if (jam.getState() != JamState.OPEN) {
+            throw new InvalidJamOperationException("La jam no está disponible");
+        }
+
+        // Comprobar si el jugador ya está en la jam
+        UsuarioEntity jugador = usuarioMapper.dtoToUsuariosEntity(jugadorDTO);
         boolean alreadyJoined = jam.getPlayers() != null &&
                 jam.getPlayers().stream().anyMatch(p -> p.getSteamId().equals(jugador.getSteamId()));
-
         if (alreadyJoined) {
             throw new PlayerAlreadyJoinedException("El jugador ya está en la jam");
         }
 
+        // Comprobar si ya está llena
+        int currentPlayers = jam.getPlayers() != null ? jam.getPlayers().size() : 0;
+        if (currentPlayers >= jam.getMaxPlayers()) {
+            throw new InvalidJamOperationException("La jam ya está llena");
+        }
+
+        // Añadir jugador
         if (jam.getPlayers() == null) jam.setPlayers(new ArrayList<>());
         jam.getPlayers().add(jugador);
-        jamMongoRepository.save(jam);
 
+        // Actualizar estado si ahora está llena
+        if (jam.getPlayers().size() >= jam.getMaxPlayers()) {
+            jam.setState(JamState.FULL);
+        }
+
+        jamMongoRepository.save(jam); // Guardar después de todos los cambios
 
         return jamMapper.jamToOutputDto(jam);
     }
+
 
 
     public JamOutputDTO removePlayerFromJam(String jamId, String steamIdToRemove) {
@@ -193,10 +218,19 @@ public class JamRepository {
             jam.getPlayers().removeIf(p -> p.getSteamId().equals(steamIdToRemove));
         }
 
-        updateJamStateIfNeeded(jam); // <<<<< Puede pasar de FULL a OPEN
+        // Actualizar estado si estaba llena y ahora hay hueco
+        if (jam.getState() == JamState.FULL &&
+                jam.getPlayers() != null &&
+                jam.getPlayers().size() < jam.getMaxPlayers()) {
+            jam.setState(JamState.OPEN);
+        }
+
+        updateJamStateIfNeeded(jam); // Para marcar como FINISHED si ya pasó la fecha
+
         JamEntity updated = jamMongoRepository.save(jam);
         return jamMapper.jamToOutputDto(updated);
     }
+
 
     // Obtener jams que ha hecho un usuario y en las que participa
 

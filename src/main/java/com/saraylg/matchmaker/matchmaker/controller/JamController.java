@@ -54,16 +54,6 @@ public class JamController {
         return jamService.getOpenJamsByTitle(title);
     }
 
-    /* public List<JamOutputDTO> getByTitle(@RequestBody TitleInputDTO titleInputDto) {
-        String title = titleInputDto.getTitle();
-        return jamService.getJamsByTitle(title);
-    } */
-
-    // @GetMapping("/getByMode/{mode}")
-    // public List<JamOutputDTO> getByMode(@PathVariable String mode) {
-    //     return jamService.getJamsByMode(mode);
-    // }
-
     @Operation(summary = "Obtener jams creadas por un usuario (ID del creador)")
     @GetMapping("/byCreator/{id}")
     public List<JamOutputDTO> getByCreator(@PathVariable String id) {

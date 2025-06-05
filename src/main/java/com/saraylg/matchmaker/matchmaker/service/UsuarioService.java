@@ -86,10 +86,15 @@ public class UsuarioService {
 
     /**
      * Actualiza los datos del usuario.
-     * ❌ No usa la API de Steam.
+     *  ✅ Sí usa la API de Steam.
      */
-    public UsuarioOutputDTO updateUser(String steamId, UsuarioInputDTO dto) {
-        return usuariosRepository.updateUser(steamId, dto);
+    public UsuarioOutputDTO updateUser(String steamId) {
+        // Reutilizamos método existente para obtener el usuario desde Steam
+        SteamPlayerInputDTO steamPlayer = fetchSteamPlayer(steamId);
+        UsuarioInputDTO usuarioDesdeSteam = usuarioMapper.steamPlayerToDto(steamPlayer);
+
+        // Reutilizamos el método del repository
+        return usuariosRepository.updateUserIfChanged(steamId, usuarioDesdeSteam);
     }
 
     /**
