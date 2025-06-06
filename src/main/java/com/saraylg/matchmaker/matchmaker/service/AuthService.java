@@ -24,12 +24,14 @@ public class AuthService {
     private final UsuarioService usuarioService;
     private final JwtService jwtService;
 
+
     public void redirigirSteam(HttpServletResponse response) throws IOException {
+        String API_URL = "https://matchmakerapi.onrender.com";
         String steamUrl = "https://steamcommunity.com/openid/login?" +
                 "openid.ns=http://specs.openid.net/auth/2.0&" +
                 "openid.mode=checkid_setup&" +
-                "openid.return_to=http://localhost:8080/auth/steam/callback&" +
-                "openid.realm=http://localhost:8080&" +
+                "openid.return_to=" + API_URL + "/auth/steam/callback&" +
+                "openid.realm="+ API_URL + "&" +
                 "openid.identity=http://specs.openid.net/auth/2.0/identifier_select&" +
                 "openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select";
 
@@ -52,7 +54,9 @@ public class AuthService {
             cookie.setMaxAge(86400); // 1 día
 
             response.addCookie(cookie);
-            response.sendRedirect("http://localhost:3000/perfil?id=" + steamId);
+            // private final String API_URL = "http://localhost:8080";
+            String FRONT_URL = "https://mm-vercel-ten.vercel.app";
+            response.sendRedirect(FRONT_URL + "/perfil?id=" + steamId);
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
         }
