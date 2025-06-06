@@ -35,7 +35,11 @@ public class AuthService {
                 "openid.identity=http://specs.openid.net/auth/2.0/identifier_select&" +
                 "openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select";
 
-        response.sendRedirect(steamUrl);
+        // response.sendRedirect(steamUrl);
+
+        response.setStatus(HttpServletResponse.SC_FOUND); // 302
+        response.setHeader("Location", steamUrl);
+        response.flushBuffer();
     }
 
     /*
@@ -85,7 +89,12 @@ public class AuthService {
             response.addCookie(cookie);
             // private final String API_URL = "http://localhost:8080";
             String FRONT_URL = "https://mm-vercel-ten.vercel.app";
-            response.sendRedirect(FRONT_URL + "/perfil?id=" + steamId);
+
+            //response.sendRedirect(FRONT_URL + "/perfil?id=" + steamId);
+
+            response.setStatus(HttpServletResponse.SC_FOUND); // 302
+            response.setHeader("Location", FRONT_URL + "/perfil?id=" + steamId);
+            response.flushBuffer();
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
         }
