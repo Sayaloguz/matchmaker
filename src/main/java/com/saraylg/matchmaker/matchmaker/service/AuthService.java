@@ -47,6 +47,32 @@ public class AuthService {
             UsuarioOutputDTO usuario = usuarioService.getAndSavePlayer(steamId);
             String token = jwtService.generateToken(usuario);
 
+            String cookieString = "jwt=" + token +
+                    "; Max-Age=86400" +
+                    "; Path=/" +
+                    "; Secure" +
+                    "; HttpOnly" +
+                    "; SameSite=None";
+
+            response.addHeader("Set-Cookie", cookieString);
+
+            String FRONT_URL = "https://mm-vercel-ten.vercel.app";
+            response.sendRedirect(FRONT_URL + "/perfil?id=" + steamId);
+        } else {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
+        }
+    }
+
+    /*
+    public void steamCallback(Map<String, String> params, HttpServletResponse response) throws IOException {
+        System.out.println("Callback de Steam recibido: " + params);
+
+        if (verificarSteam(params)) {
+            String steamId = extraerSteamId(params.get("openid.claimed_id"));
+
+            UsuarioOutputDTO usuario = usuarioService.getAndSavePlayer(steamId);
+            String token = jwtService.generateToken(usuario);
+
             Cookie cookie = new Cookie("jwt", token);
             cookie.setHttpOnly(true);
             cookie.setSecure(true); // True si HTTPS
@@ -61,6 +87,7 @@ public class AuthService {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
         }
     }
+    */
 
     public ResponseEntity<UsuarioOutputDTO> getUsuarioDesdeToken(String token) {
         if (token == null) {
@@ -76,6 +103,12 @@ public class AuthService {
     }
 
     public void cerrarSesion(HttpServletResponse response) {
+        String cookieDelete = "jwt=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=None";
+        response.addHeader("Set-Cookie", cookieDelete);
+    }
+
+    /*
+    public void cerrarSesion(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(true); // True si HTTPS
@@ -83,7 +116,9 @@ public class AuthService {
         cookie.setMaxAge(0);
 
         response.addCookie(cookie);
+
     }
+    */
 
     private String extraerSteamId(String claimedId) {
         return claimedId.substring(claimedId.lastIndexOf("/") + 1);
