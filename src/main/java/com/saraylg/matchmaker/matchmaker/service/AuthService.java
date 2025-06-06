@@ -49,7 +49,7 @@ public class AuthService {
 
             Cookie cookie = new Cookie("jwt", token);
             cookie.setHttpOnly(true);
-            cookie.setSecure(false); // Cambiar a true si usas HTTPS
+            cookie.setSecure(true); // True si HTTPS
             cookie.setPath("/");
             cookie.setMaxAge(86400); // 1 día
 
@@ -78,7 +78,7 @@ public class AuthService {
     public void cerrarSesion(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(true); // True si HTTPS
         cookie.setPath("/");
         cookie.setMaxAge(0);
 
