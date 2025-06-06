@@ -38,6 +38,7 @@ public class AuthService {
         response.sendRedirect(steamUrl);
     }
 
+    /*
     public void steamCallback(Map<String, String> params, HttpServletResponse response) throws IOException {
         System.out.println("Callback de Steam recibido: " + params);
 
@@ -62,8 +63,9 @@ public class AuthService {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
         }
     }
+    */
 
-    /*
+
     public void steamCallback(Map<String, String> params, HttpServletResponse response) throws IOException {
         System.out.println("Callback de Steam recibido: " + params);
 
@@ -78,6 +80,7 @@ public class AuthService {
             cookie.setSecure(true); // True si HTTPS
             cookie.setPath("/");
             cookie.setMaxAge(86400); // 1 día
+            cookie.setAttribute("SameSite", "None");
 
             response.addCookie(cookie);
             // private final String API_URL = "http://localhost:8080";
@@ -87,7 +90,7 @@ public class AuthService {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
         }
     }
-    */
+
 
     public ResponseEntity<UsuarioOutputDTO> getUsuarioDesdeToken(String token) {
         if (token == null) {
@@ -102,23 +105,26 @@ public class AuthService {
         }
     }
 
+    /*
     public void cerrarSesion(HttpServletResponse response) {
         String cookieDelete = "jwt=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=None";
         response.addHeader("Set-Cookie", cookieDelete);
     }
+    */
 
-    /*
+
     public void cerrarSesion(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(true); // True si HTTPS
         cookie.setPath("/");
         cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite", "None");
 
         response.addCookie(cookie);
 
     }
-    */
+
 
     private String extraerSteamId(String claimedId) {
         return claimedId.substring(claimedId.lastIndexOf("/") + 1);
