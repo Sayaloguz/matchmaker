@@ -1,6 +1,7 @@
 package com.saraylg.matchmaker.matchmaker.controller;
 
 import com.saraylg.matchmaker.matchmaker.dto.output.SteamAppOutputDTO;
+import com.saraylg.matchmaker.matchmaker.mapper.SteamAppMapper;
 import com.saraylg.matchmaker.matchmaker.service.SteamAppService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,17 +18,18 @@ import java.util.List;
 public class SteamAppController {
 
     private final SteamAppService service;
+    private final SteamAppMapper steamAppMapper;
 
     @Operation(summary = "Obtener todos los juegos del catálogo")
     @GetMapping("/")
     public List<SteamAppOutputDTO> list() {
-        return service.findAll();
+        return steamAppMapper.genericListToOutput(service.findAll());
     }
 
     @Operation(summary = "Obtener juego por appid")
     @GetMapping("/byId/{appid}")
     public ResponseEntity<SteamAppOutputDTO> getByAppId(@PathVariable Long appid) {
-        return service.findByAppid(appid)
+        return steamAppMapper.genericOptionalToOutput(service.findByAppid(appid))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -42,6 +44,6 @@ public class SteamAppController {
     @Operation(summary = "Buscar juegos por título")
     @GetMapping("/search")
     public List<SteamAppOutputDTO> searchByName(@RequestParam String title) {
-        return service.findByName(title);
+        return steamAppMapper.genericListToOutput(service.findByName(title));
     }
 }

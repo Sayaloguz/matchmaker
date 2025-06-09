@@ -2,10 +2,10 @@ package com.saraylg.matchmaker.matchmaker.repository;
 
 import com.saraylg.matchmaker.matchmaker.dto.input.SteamAppDetailsInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.internal.SteamAppListResponse;
-import com.saraylg.matchmaker.matchmaker.dto.output.SteamAppOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.SteamAppMapper;
 import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.SteamAppMongoRepository;
+import com.saraylg.matchmaker.matchmaker.service.generics.GenericSteamApp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,7 +29,7 @@ public class SteamAppRepository {
     private final SteamAppMongoRepository repo;
     private final WebClient steamWebClient;   // https://api.steampowered.com
     private final WebClient storeWebClient;   // https://store.steampowered.com/api
-    private final SteamAppMapper mapper;
+    private final SteamAppMapper steamAppMapper;
     private static final String APPS_PATH = "/ISteamApps/GetAppList/v2";
     private static final String LAST_APP_ID_FILE = "last_appid.txt";
 
@@ -113,7 +113,7 @@ public class SteamAppRepository {
 
                     if (isGame && !comingSoon && !isAdultOnly) {
                         System.out.println("|||||||||||||||||||||||||||||||||||||||| Pasa el filtro - AppId: " + appid);
-                        return Mono.just(mapper.toEntity(appid, d));
+                        return Mono.just(steamAppMapper.toEntity(appid, d));
                     }
 
                     return Mono.empty();
@@ -143,24 +143,24 @@ public class SteamAppRepository {
 
     // Devolución de datos desde la BBDD
 
-    public List<SteamAppOutputDTO> findAll() {
+    public List<GenericSteamApp> findAll() {
         List<SteamAppEntity> apps = repo.findAll();
         return apps.stream()
-                .map(mapper::toOutput)
+                .map(steamAppMapper::entityToGeneric)
                 .collect(Collectors.toList());
     }
 
 
-    public Optional<SteamAppOutputDTO> findByAppid(Long appid) {
+    public Optional<GenericSteamApp> findByAppid(Long appid) {
         return repo.findByAppid(appid)
-                .map(mapper::toOutput);
+                .map(steamAppMapper::entityToGeneric);
     }
 
 
-    public List<SteamAppOutputDTO> findByName(String name) {
+    public List<GenericSteamApp> findByName(String name) {
         List<SteamAppEntity> apps = repo.findByNameRegexIgnoreCase(".*" + name + ".*");
         return apps.stream()
-                .map(mapper::toOutput)
+                .map(steamAppMapper::entityToGeneric)
                 .collect(Collectors.toList());
     }
 
