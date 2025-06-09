@@ -1,6 +1,7 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
 import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
+import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class AuthService {
 
     private final UsuarioService usuarioService;
     private final JwtService jwtService;
+    private final UsuarioMapper usuarioMapper;
 
 
     public void redirigirSteam(HttpServletResponse response) throws IOException {
@@ -40,6 +42,8 @@ public class AuthService {
         response.setStatus(HttpServletResponse.SC_FOUND); // 302
         response.setHeader("Location", steamUrl);
         response.flushBuffer();
+
+
     }
 
     /*
@@ -76,7 +80,7 @@ public class AuthService {
         if (verificarSteam(params)) {
             String steamId = extraerSteamId(params.get("openid.claimed_id"));
 
-            UsuarioOutputDTO usuario = usuarioService.getAndSavePlayer(steamId);
+            UsuarioOutputDTO usuario = usuarioMapper.genericToOutput(usuarioService.getAndSavePlayer(steamId));
             String token = jwtService.generateToken(usuario);
 
             Cookie cookie = new Cookie("jwt", token);
@@ -85,6 +89,10 @@ public class AuthService {
             cookie.setPath("/");
             cookie.setMaxAge(86400); // 1 día
             cookie.setAttribute("SameSite", "None");
+
+
+            response.setHeader("Access-Control-Allow-Origin", "https://mm-vercel-ten.vercel.app");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
 
             response.addCookie(cookie);
             // private final String API_URL = "http://localhost:8080";
