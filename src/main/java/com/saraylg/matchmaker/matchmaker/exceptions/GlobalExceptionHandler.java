@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GenericResponseDTO<Object>>handleInvalidJamOperation(InvalidJamOperationException ex) {
 
         GenericResponseDTO<Object> response = new GenericResponseDTO<>(
-                "Operación de la jam no permitida",
+                ex.getMessage(),
                 String.valueOf(HttpStatus.FORBIDDEN.value()),
                 null
         );
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PlayerAlreadyJoinedException.class)
     public ResponseEntity<GenericResponseDTO<Object>> handlePlayerAlreadyJoined(PlayerAlreadyJoinedException ex) {
         GenericResponseDTO<Object> response = new GenericResponseDTO<>(
-                "El/la jugador/a se encuentra ya en la jam",
+                ex.getMessage(),
                 String.valueOf(HttpStatus.CONFLICT.value()),
                 null
         );
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(JamNotFoundException.class)
     public ResponseEntity<GenericResponseDTO<Object>> handleJamNotFound(JamNotFoundException ex) {
         GenericResponseDTO<Object> response = new GenericResponseDTO<>(
-                "Jam no encontrada",
+                ex.getMessage(),
                 String.valueOf(HttpStatus.NOT_FOUND.value()),
                 null
         );
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GenericResponseDTO<Object>> handlePlayerNotFound(PlayerNotFoundInJamException ex) {
 
         GenericResponseDTO<Object> response = new GenericResponseDTO<>(
-                "Jugador/a no encontrado/a en la jam",
+                ex.getMessage(),
                 String.valueOf(HttpStatus.NOT_FOUND.value()),
                 null
         );
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<GenericResponseDTO<Object>> handleGeneric(RuntimeException ex) {
         GenericResponseDTO<Object> response = new GenericResponseDTO<>(
-                "Fallo en la petición",
+                ex.getMessage(),
                 String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 null
         );
@@ -76,6 +76,26 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<GenericResponseDTO<Object>> handleUserNotFound(UserNotFoundException ex) {
+        GenericResponseDTO<Object> response = new GenericResponseDTO<>(
+                ex.getMessage(),
+                String.valueOf(HttpStatus.NOT_FOUND.value()),
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(JamAlreadyFullException.class)
+    public ResponseEntity<GenericResponseDTO<Object>> handleJamAlreadyFull(JamAlreadyFullException ex) {
+        GenericResponseDTO<Object> response = new GenericResponseDTO<>(
+                ex.getMessage(),
+                String.valueOf(HttpStatus.CONFLICT.value()),
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
 }

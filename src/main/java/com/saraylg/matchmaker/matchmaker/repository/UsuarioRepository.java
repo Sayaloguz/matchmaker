@@ -2,6 +2,7 @@ package com.saraylg.matchmaker.matchmaker.repository;
 
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.GenericResponseDTO;
+import com.saraylg.matchmaker.matchmaker.exceptions.UserNotFoundException;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.model.InvitationEntity;
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
@@ -75,7 +76,7 @@ public class UsuarioRepository {
      */
     public GenericUsuario updateUserIfChanged(String steamId, UsuarioInputDTO updatedDto) {
         UsuarioEntity existing = usuarioMapper.genericOptionalToEntity(findUserById(steamId))
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException(steamId));
 
         boolean hayCambios = false;
 
@@ -110,7 +111,7 @@ public class UsuarioRepository {
     // Cambiar por respuesta genérica
     public GenericResponseDTO<GenericUsuario> deleteUser(String steamId) {
         GenericUsuario deletedUser = findUserById(steamId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException(steamId));
 
         deleteJamsCreatedByUser(steamId);
         deleteJamsCreatedByUser(steamId);

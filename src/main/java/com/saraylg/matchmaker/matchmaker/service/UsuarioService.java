@@ -5,6 +5,7 @@ import com.saraylg.matchmaker.matchmaker.dto.internal.SteamApiResponse;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.GenericResponseDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
+import com.saraylg.matchmaker.matchmaker.exceptions.UserNotFoundException;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.repository.UsuarioRepository;
 import com.saraylg.matchmaker.matchmaker.service.generics.GenericUsuario;
@@ -82,7 +83,7 @@ public class UsuarioService {
      */
     public GenericUsuario getUserById(String steamId) {
         GenericUsuario user = usuariosRepository.findUserById(steamId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
         return user;
     }
 

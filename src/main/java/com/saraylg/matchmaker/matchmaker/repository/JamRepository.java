@@ -4,9 +4,7 @@ import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.JamOutputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
-import com.saraylg.matchmaker.matchmaker.exceptions.InvalidJamOperationException;
-import com.saraylg.matchmaker.matchmaker.exceptions.PlayerAlreadyJoinedException;
-import com.saraylg.matchmaker.matchmaker.exceptions.JamNotFoundException;
+import com.saraylg.matchmaker.matchmaker.exceptions.*;
 import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
 
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
@@ -111,7 +109,7 @@ public class JamRepository {
 
     public GenericJam modifyJam(JamModifyDTO jamModifyDTO) {
         JamEntity existing = jamMongoRepository.findById(jamModifyDTO.getId())
-                .orElseThrow(() -> new RuntimeException("Jam no encontrada"));
+                .orElseThrow(() -> new JamNotFoundException("Jam no encontrada"));
 
         if (jamModifyDTO.getMaxPlayers() != null &&
                 existing.getPlayers() != null &&
@@ -188,7 +186,7 @@ public class JamRepository {
         // Comprobar si ya está llena
         int currentPlayers = jam.getPlayers() != null ? jam.getPlayers().size() : 0;
         if (currentPlayers >= jam.getMaxPlayers()) {
-            throw new InvalidJamOperationException("La jam ya está llena");
+            throw new JamAlreadyFullException("La jam ya está llena");
         }
 
         // Añadir jugador
@@ -209,15 +207,21 @@ public class JamRepository {
 
     public GenericJam removePlayerFromJam(String jamId, String steamIdToRemove) {
         JamEntity jam = jamMongoRepository.findById(jamId)
-                .orElseThrow(() -> new RuntimeException("Jam no encontrada"));
+                .orElseThrow(() -> new JamNotFoundException("Jam no encontrada"));
 
         if (jam.getCreatedBy() != null && steamIdToRemove.equals(jam.getCreatedBy().getSteamId())) {
             throw new InvalidJamOperationException("No puedes eliminar al creador de la jam");
         }
 
+        boolean removed = false;
         if (jam.getPlayers() != null) {
-            jam.getPlayers().removeIf(p -> p.getSteamId().equals(steamIdToRemove));
+            removed = jam.getPlayers().removeIf(p -> p.getSteamId().equals(steamIdToRemove));
         }
+
+        if (!removed) {
+            throw new PlayerNotFoundInJamException("El jugador con SteamID " + steamIdToRemove + " no se encuentra en la jam");
+        }
+
 
         // Actualizar estado si estaba llena y ahora hay hueco
         if (jam.getState() == JamState.FULL &&

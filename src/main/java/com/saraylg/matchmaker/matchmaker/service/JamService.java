@@ -4,6 +4,7 @@ import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.JamOutputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
+import com.saraylg.matchmaker.matchmaker.exceptions.JamNotFoundException;
 import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
 import com.saraylg.matchmaker.matchmaker.repository.JamRepository;
 import com.saraylg.matchmaker.matchmaker.service.generics.GenericJam;
@@ -45,7 +46,7 @@ public class JamService {
 
     public GenericJam getJamById(String id) {
         return jamsRepository.getJamById(id)
-                .orElseThrow(() -> new RuntimeException("Jam no encontrada"));
+                .orElseThrow(() -> new JamNotFoundException("Jam no encontrada"));
     }
 
 
