@@ -2,7 +2,6 @@ package com.saraylg.matchmaker.matchmaker.repository;
 
 import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
-import com.saraylg.matchmaker.matchmaker.dto.output.JamOutputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.*;
 import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
@@ -12,7 +11,7 @@ import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
 import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.JamMongoRepository;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericJam;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericJam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -30,19 +29,6 @@ public class JamRepository {
     private final JamMapper jamMapper;
     private final JamMongoRepository jamMongoRepository;
     private final UsuarioMapper usuarioMapper;
-
-
-    public void deleteAllJamsCreatedBy(String steamId) {
-        List<JamEntity> jams = jamMongoRepository.findByCreatedBy_SteamId(steamId);
-        jamMongoRepository.deleteAll(jams);
-    }
-
-    public void removePlayerFromAllJams(String steamId) {
-        List<JamEntity> jams = jamMongoRepository.findByPlayers_SteamId(steamId);
-        for (JamEntity jam : jams) {
-            removePlayerFromJam(jam.getId(), steamId);
-        }
-    }
 
     public void updateJamStateIfNeeded(JamEntity jam) {
         if (jam.getState() == JamState.FINISHED) return;
@@ -117,7 +103,7 @@ public class JamRepository {
             throw new InvalidJamOperationException("No puedes establecer maxPlayers por debajo del número actual de jugadores.");
         }
 
-        if(jamModifyDTO.getTitle() != null && !jamModifyDTO.getTitle().isEmpty()) {
+        if (jamModifyDTO.getTitle() != null && !jamModifyDTO.getTitle().isEmpty()) {
             existing.setTitle(jamModifyDTO.getTitle());
         }
         if (jamModifyDTO.getDescription() != null && !jamModifyDTO.getDescription().isEmpty()) {
@@ -157,9 +143,15 @@ public class JamRepository {
     }
 
 
-    public String deleteJam(String id) {
+    public GenericJam deleteJam(String id) {
+        List<GenericJam> deletedJam = jamMapper.entityListToGeneric(jamMongoRepository.getJamEntityById(id));
+
+        if (deletedJam.isEmpty()) {
+            throw new JamNotFoundException("Jam no encontrada");
+        }
+
         jamMongoRepository.deleteById(id);
-        return "Jam eliminada con éxito";
+        return deletedJam.get(0);
     }
 
     // Añadir y quitar jugadores de una jam
@@ -202,7 +194,6 @@ public class JamRepository {
 
         return jamMapper.entityToGeneric(jam);
     }
-
 
 
     public GenericJam removePlayerFromJam(String jamId, String steamIdToRemove) {
@@ -252,7 +243,6 @@ public class JamRepository {
                 .peek(this::updateJamStateIfNeeded)
                 .toList());
     }
-
 
 
 }

@@ -4,7 +4,7 @@ import com.saraylg.matchmaker.matchmaker.dto.output.GenericResponseDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.service.UsuarioService;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericUsuario;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericUsuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +59,11 @@ public class UsuarioController {
     @Operation(summary = "Eliminar un usuario por Steam ID")
     @DeleteMapping("/{steamId}")
     public GenericResponseDTO<GenericUsuario> deleteUser(@PathVariable String steamId) {
-        return usuariosService.deleteUser(steamId);
+        return new GenericResponseDTO<>(
+                "Usuario eliminado correctamente",
+                "200",
+                usuariosService.deleteUser(steamId)
+        );
     }
 
 

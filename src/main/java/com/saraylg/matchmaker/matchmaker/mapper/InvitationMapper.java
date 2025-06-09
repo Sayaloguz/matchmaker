@@ -3,7 +3,7 @@ package com.saraylg.matchmaker.matchmaker.mapper;
 import com.saraylg.matchmaker.matchmaker.dto.input.InvitationInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.InvitationOutputDTO;
 import com.saraylg.matchmaker.matchmaker.model.InvitationEntity;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericInvitation;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericInvitation;
 import org.mapstruct.Mapper;
 
 import java.util.List;

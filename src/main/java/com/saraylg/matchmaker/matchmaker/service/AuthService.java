@@ -28,7 +28,8 @@ public class AuthService {
 
 
     public void redirigirSteam(HttpServletResponse response) throws IOException {
-        String API_URL = "https://matchmakerapi.onrender.com";
+        // String API_URL = "https://matchmakerapi.onrender.com";
+        String API_URL = "http://localhost:8080";
         String steamUrl = "https://steamcommunity.com/openid/login?" +
                 "openid.ns=http://specs.openid.net/auth/2.0&" +
                 "openid.mode=checkid_setup&" +
@@ -46,34 +47,6 @@ public class AuthService {
 
     }
 
-    /*
-    public void steamCallback(Map<String, String> params, HttpServletResponse response) throws IOException {
-        System.out.println("Callback de Steam recibido: " + params);
-
-        if (verificarSteam(params)) {
-            String steamId = extraerSteamId(params.get("openid.claimed_id"));
-
-            UsuarioOutputDTO usuario = usuarioService.getAndSavePlayer(steamId);
-            String token = jwtService.generateToken(usuario);
-
-            String cookieString = "jwt=" + token +
-                    "; Max-Age=86400" +
-                    "; Path=/" +
-                    "; Secure" +
-                    "; HttpOnly" +
-                    "; SameSite=None";
-
-            response.addHeader("Set-Cookie", cookieString);
-
-            String FRONT_URL = "https://mm-vercel-ten.vercel.app";
-            response.sendRedirect(FRONT_URL + "/perfil?id=" + steamId);
-        } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticación con Steam fallida.");
-        }
-    }
-    */
-
-
     public void steamCallback(Map<String, String> params, HttpServletResponse response) throws IOException {
         System.out.println("Callback de Steam recibido: " + params);
 
@@ -85,18 +58,20 @@ public class AuthService {
 
             Cookie cookie = new Cookie("jwt", token);
             cookie.setHttpOnly(true);
-            cookie.setSecure(true); // True si HTTPS
+            cookie.setSecure(false); // True si HTTPS
             cookie.setPath("/");
             cookie.setMaxAge(86400); // 1 día
-            cookie.setAttribute("SameSite", "None");
+            cookie.setAttribute("SameSite", "Lax");
+
+            //String FRONT_URL = "https://mm-vercel-ten.vercel.app";
+            String FRONT_URL = "http://localhost:3000";
 
 
-            response.setHeader("Access-Control-Allow-Origin", "https://mm-vercel-ten.vercel.app");
+            response.setHeader("Access-Control-Allow-Origin", FRONT_URL);
             response.setHeader("Access-Control-Allow-Credentials", "true");
 
             response.addCookie(cookie);
             // private final String API_URL = "http://localhost:8080";
-            String FRONT_URL = "https://mm-vercel-ten.vercel.app";
 
             //response.sendRedirect(FRONT_URL + "/perfil?id=" + steamId);
 
@@ -133,10 +108,10 @@ public class AuthService {
     public void cerrarSesion(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true); // True si HTTPS
+        cookie.setSecure(false); // True si HTTPS
         cookie.setPath("/");
         cookie.setMaxAge(0);
-        cookie.setAttribute("SameSite", "None");
+        cookie.setAttribute("SameSite", "Lax");
 
         response.addCookie(cookie);
 

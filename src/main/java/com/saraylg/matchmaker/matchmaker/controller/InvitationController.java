@@ -4,7 +4,6 @@ import com.saraylg.matchmaker.matchmaker.dto.input.InvitationInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.InvitationOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.InvitationMapper;
 import com.saraylg.matchmaker.matchmaker.service.InvitationService;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericInvitation;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -31,7 +30,6 @@ public class InvitationController {
     @Operation(summary = "Crear una invitación")
     @PostMapping("/")
     public InvitationOutputDTO createInvite(@Valid @RequestBody InvitationInputDTO invInputDTO) {
-        System.out.println(invMapper.inputToGeneric(invInputDTO).getInvId());
         return invMapper
                 .genericToOutput(invitationService
                         .createInvite(invMapper

@@ -20,4 +20,5 @@ public interface JamMongoRepository extends MongoRepository<JamEntity, String> {
     List<JamEntity> findByTitleContainingIgnoreCaseAndState(String title, JamState state);
 
 
+    List<JamEntity> getJamEntityById(String id);
 }

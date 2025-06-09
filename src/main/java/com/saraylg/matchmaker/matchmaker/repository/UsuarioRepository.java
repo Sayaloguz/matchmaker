@@ -1,17 +1,11 @@
 package com.saraylg.matchmaker.matchmaker.repository;
 
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.output.GenericResponseDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.UserNotFoundException;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
-import com.saraylg.matchmaker.matchmaker.model.InvitationEntity;
-import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
-import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
-import com.saraylg.matchmaker.matchmaker.repository.mongo.InvitationMongoRepository;
-import com.saraylg.matchmaker.matchmaker.repository.mongo.JamMongoRepository;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.UsuarioMongoRepository;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericUsuario;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericUsuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -29,10 +23,11 @@ public class UsuarioRepository {
 
     private final UsuarioMapper usuarioMapper;
     private final UsuarioMongoRepository usuarioMongoRepository;
-    private final JamMongoRepository jamMongoRepository;
-    private final JamRepository jamRepository;
-    private final InvitationMongoRepository invMongoRepo;
-    private final InvitationRepository invRepository;
+
+    //private final JamMongoRepository jamMongoRepository;
+    //private final JamRepository jamRepository;
+    //private final InvitationMongoRepository invMongoRepo;
+    //private final InvitationRepository invRepository;
 
     /**
      * Guarda un nuevo usuario en la base de datos a partir de un DTO de entrada.
@@ -108,69 +103,12 @@ public class UsuarioRepository {
     }
 
 
-    // Cambiar por respuesta genérica
-    public GenericResponseDTO<GenericUsuario> deleteUser(String steamId) {
+    public GenericUsuario deleteUser(String steamId) {
         GenericUsuario deletedUser = findUserById(steamId)
                 .orElseThrow(() -> new UserNotFoundException(steamId));
 
-        deleteJamsCreatedByUser(steamId);
-        deleteJamsCreatedByUser(steamId);
-        removeUserFromAllJams(steamId);
-        deleteAllUserInvitations(steamId);
         usuarioMongoRepository.deleteById(steamId);
 
-        return new GenericResponseDTO<>(
-                "Usuario y todos sus datos relacionados eliminados con éxito",
-                "200",
-                deletedUser
-        );    }
-
-
-    private void deleteJamsCreatedByUser(String steamId) {
-        // Obtener todas las jams creadas por el usuario
-        List<JamEntity> jamsCreadas = jamMongoRepository.findByCreatedBy_SteamId(steamId);
-
-        // Eliminar cada jam
-        for (JamEntity jam : jamsCreadas) {
-            jamRepository.deleteJam(jam.getId());
-        }
+        return deletedUser;
     }
-
-    private void removeUserFromAllJams(String steamId) {
-        // Obtener todas las jams en las que participa el usuario
-        List<JamEntity> jamsParticipadas = jamMongoRepository.findByPlayers_SteamId(steamId)
-                .stream()
-                .filter(jamEntity -> jamEntity.getState() != JamState.FINISHED)
-                .toList();
-
-        // Eliminar al usuario de cada jam
-        for (JamEntity jam : jamsParticipadas) {
-            jamRepository.removePlayerFromJam(jam.getId(), steamId);
-        }
-    }
-
-    private void deleteAllUserInvitations(String steamId) {
-        // Eliminar invitaciones donde el usuario es el remitente o el receptor
-        List<InvitationEntity> invitaciones = invMongoRepo.findBySenderIdOrReceiverId(steamId, steamId);
-
-        for (InvitationEntity inv : invitaciones) {
-            invRepository.deleteInvite(inv.getInvId());
-        }
-    }
-
-    /*
-    *    private GenericResponseDTO<List<GenericInvitation>> deleteAllUserInvitations(String steamId) {
-        // Eliminar invitaciones donde el usuario es el remitente o el receptor
-        List<InvitationEntity> invitaciones = invMongoRepo.findBySenderIdOrReceiverId(steamId, steamId);
-
-        for (InvitationEntity inv : invitaciones) {
-            invRepository.deleteInvite(inv.getInvId());
-        }
-
-        return new GenericResponseDTO<List<GenericInvitation>>(
-                "Todas las invitaciones del usuario han sido eliminadas",
-                "200",
-                invMapper.entityListToGenericList(invitaciones)
-        );
-    * */
 }

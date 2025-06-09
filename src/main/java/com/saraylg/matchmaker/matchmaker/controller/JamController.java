@@ -7,12 +7,11 @@ import com.saraylg.matchmaker.matchmaker.dto.output.GenericResponseDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.JamOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
 import com.saraylg.matchmaker.matchmaker.service.JamService;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericJam;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericJam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -82,13 +81,11 @@ public class JamController {
     }
 
     // Añadir y quitar jugadores de una jam
-
-    @Operation(summary = "Añadir un jugador a una jam")
+    @Operation(summary = "Añadir un jugador a una jam. Se pide input de usuario completo para evitar referencias circulares.")
     @PostMapping("/{jamId}/addPlayer")
     public GenericResponseDTO<GenericJam> addPlayerToJam(
             @PathVariable String jamId,
             @RequestBody UsuarioInputDTO jugador) {
-        //return ResponseEntity.ok(jamService.addPlayerToJam(jamId, jugador));
         return new GenericResponseDTO<GenericJam>(
                 "Jugador añadido correctamente",
                 "200",
@@ -101,7 +98,7 @@ public class JamController {
     public GenericResponseDTO<GenericJam> removePlayerFromJam(
             @PathVariable String jamId,
             @PathVariable String steamId) {
-        //return ResponseEntity.ok(jamService.removePlayerFromJam(jamId, steamId));
+
         return new GenericResponseDTO<GenericJam>(
                 "Jugador eliminado correctamente",
                 "200",
@@ -112,8 +109,13 @@ public class JamController {
 
     @Operation(summary = "Eliminar una jam por su ID")
     @DeleteMapping("/delete/{id}")
-    public String deleteJam(@PathVariable String id) {
-        return jamService.deleteJam(id);
+    public GenericResponseDTO<GenericJam> deleteJam(@PathVariable String id) {
+
+        return new GenericResponseDTO<GenericJam>(
+                "Jam eliminada correctamente",
+                "200",
+                jamService.deleteJam(id)
+        );
     }
 
 }

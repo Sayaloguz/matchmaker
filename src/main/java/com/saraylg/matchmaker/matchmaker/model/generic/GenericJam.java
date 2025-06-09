@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.service.generics;
+package com.saraylg.matchmaker.matchmaker.model.generic;
 
 import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;

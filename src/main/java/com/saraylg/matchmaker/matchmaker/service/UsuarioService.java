@@ -3,12 +3,10 @@ package com.saraylg.matchmaker.matchmaker.service;
 import com.saraylg.matchmaker.matchmaker.dto.input.SteamPlayerInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.internal.SteamApiResponse;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.output.GenericResponseDTO;
-import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.UserNotFoundException;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.repository.UsuarioRepository;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericUsuario;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericUsuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,10 +24,11 @@ public class UsuarioService {
 
     @Value("${steam.api.key}")
     private String steamApiKey;
-
     private final WebClient steamWebClient;
-
     private static final String STEAM_API_PLAYER_PATH = "/ISteamUser/GetPlayerSummaries/v0002/";
+
+    private final JamService jamService;
+    private final InvitationService invitationService;
 
     /**
      * Devuelve los datos del jugador. Si no está en la BD, lo obtiene de Steam.
@@ -104,7 +103,21 @@ public class UsuarioService {
      * Elimina un usuario por su Steam ID.
      * ❌ No usa la API de Steam.
      */
-    public GenericResponseDTO<GenericUsuario> deleteUser(String steamId) {
+    public GenericUsuario deleteUser(String steamId) {
+        GenericUsuario deletedUser = usuariosRepository.findUserById(steamId)
+                .orElseThrow(() -> new UserNotFoundException(steamId));
+
+        // 1. Eliminar todas las jams creadas por el usuario
+        jamService.deleteJamsCreatedByUser(steamId);
+
+        // 2. Eliminar al usuario de todas las jams donde participa
+        jamService.removeUserFromAllJams(steamId);
+
+        // 3. Eliminar todas las invitaciones relacionadas
+        invitationService.deleteAllUserInvitations(steamId);
+
+        // 4. Finalmente eliminar el usuario
+
         return usuariosRepository.deleteUser(steamId);
     }
 

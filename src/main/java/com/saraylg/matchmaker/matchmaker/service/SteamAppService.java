@@ -1,7 +1,7 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
 import com.saraylg.matchmaker.matchmaker.repository.SteamAppRepository;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericSteamApp;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericSteamApp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

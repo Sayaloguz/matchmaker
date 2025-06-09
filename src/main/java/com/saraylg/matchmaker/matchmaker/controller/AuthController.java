@@ -51,7 +51,7 @@ public class AuthController {
 
     @Operation(summary = "Cerrar sesión del usuario eliminando la cookie JWT")
     @GetMapping("/logout")
-    public ResponseEntity<Void> salir(HttpServletResponse response) {
+    public ResponseEntity<Void> exit(HttpServletResponse response) {
         authService.cerrarSesion(response);
         return ResponseEntity.noContent().build(); // 204
     }

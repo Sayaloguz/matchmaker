@@ -1,4 +1,4 @@
-package com.saraylg.matchmaker.matchmaker.service.generics;
+package com.saraylg.matchmaker.matchmaker.model.generic;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

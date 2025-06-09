@@ -4,7 +4,7 @@ import com.saraylg.matchmaker.matchmaker.dto.input.SteamPlayerInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericUsuario;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericUsuario;
 import org.mapstruct.Mapper;
 
 import java.util.List;

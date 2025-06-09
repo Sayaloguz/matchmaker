@@ -4,7 +4,7 @@ import com.saraylg.matchmaker.matchmaker.exceptions.InvitationNotFoundException;
 import com.saraylg.matchmaker.matchmaker.mapper.InvitationMapper;
 import com.saraylg.matchmaker.matchmaker.model.InvitationEntity;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.InvitationMongoRepository;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericInvitation;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericInvitation;
 import lombok.*;
 import org.springframework.stereotype.Repository;
 

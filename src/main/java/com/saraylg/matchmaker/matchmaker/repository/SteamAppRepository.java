@@ -5,7 +5,7 @@ import com.saraylg.matchmaker.matchmaker.dto.internal.SteamAppListResponse;
 import com.saraylg.matchmaker.matchmaker.mapper.SteamAppMapper;
 import com.saraylg.matchmaker.matchmaker.model.SteamAppEntity;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.SteamAppMongoRepository;
-import com.saraylg.matchmaker.matchmaker.service.generics.GenericSteamApp;
+import com.saraylg.matchmaker.matchmaker.model.generic.GenericSteamApp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
