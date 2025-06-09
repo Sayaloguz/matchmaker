@@ -14,6 +14,7 @@ import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
 import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.JamMongoRepository;
+import com.saraylg.matchmaker.matchmaker.service.generics.GenericJam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -59,56 +60,56 @@ public class JamRepository {
     }
 
 
-    public JamOutputDTO newJam(JamInputDTO jamInputDTO) {
+    public GenericJam newJam(JamInputDTO jamInputDTO) {
         JamEntity jam = jamMapper.jamInputDtoToJam(jamInputDTO);
 
         jamMongoRepository.save(jam);
 
-        return jamMapper.jamToOutputDto(jam);
+        return jamMapper.entityToGeneric(jam);
     }
 
-    public List<JamOutputDTO> getAllJams() {
+    public List<GenericJam> getAllJams() {
         List<JamEntity> jams = jamMongoRepository.findAll();
 
-        List<JamOutputDTO> jamsDTO = new ArrayList<>();
+        List<GenericJam> everyJam = new ArrayList<>();
         for (JamEntity jam : jams) {
             updateJamStateIfNeeded(jam);
-            jamsDTO.add(jamMapper.jamToOutputDto(jam));
+            everyJam.add(jamMapper.entityToGeneric(jam));
         }
-        return jamsDTO;
+        return everyJam;
     }
 
-    public Optional<JamEntity> getJamById(String id) {
+    public Optional<GenericJam> getJamById(String id) {
         Optional<JamEntity> jamOpt = jamMongoRepository.findById(id);
         jamOpt.ifPresent(this::updateJamStateIfNeeded);
-        return jamOpt;
+        return jamMapper.entityOptionalToGeneric(jamOpt);
     }
 
 
-    public List<JamEntity> getJamsByTitle(String title) {
-        return jamMongoRepository.findByTitleContainingIgnoreCase(title);
+    public List<GenericJam> getJamsByTitle(String title) {
+        return jamMapper.entityListToGeneric(jamMongoRepository.findByTitleContainingIgnoreCase(title));
     }
 
-    public List<JamEntity> getOpenJamsByTitle(String title) {
-        return jamMongoRepository.findByTitleContainingIgnoreCaseAndState(title, JamState.OPEN);
+    public List<GenericJam> getOpenJamsByTitle(String title) {
+        return jamMapper.entityListToGeneric(jamMongoRepository.findByTitleContainingIgnoreCaseAndState(title, JamState.OPEN));
     }
 
 
-    public List<JamEntity> getJamByState(String state) {
-        return jamMongoRepository.findAll().stream()
+    public List<GenericJam> getJamByState(String state) {
+        return jamMapper.entityListToGeneric(jamMongoRepository.findAll().stream()
                 .filter(jam -> String.valueOf(jam.getState()).equalsIgnoreCase(state))
                 .peek(this::updateJamStateIfNeeded)
-                .toList();
+                .toList());
     }
 
-    public List<JamEntity> getJamByMode(String gameMode) {
-        return jamMongoRepository.findAll().stream()
+    public List<GenericJam> getJamByMode(String gameMode) {
+        return jamMapper.entityListToGeneric(jamMongoRepository.findAll().stream()
                 .filter(jam -> String.valueOf(jam.getGameMode()).equalsIgnoreCase(gameMode))
                 .peek(this::updateJamStateIfNeeded)
-                .toList();
+                .toList());
     }
 
-    public JamOutputDTO modifyJam(JamModifyDTO jamModifyDTO) {
+    public GenericJam modifyJam(JamModifyDTO jamModifyDTO) {
         JamEntity existing = jamMongoRepository.findById(jamModifyDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Jam no encontrada"));
 
@@ -154,7 +155,7 @@ public class JamRepository {
         }
 
 
-        return jamMapper.jamToOutputDto(jamMongoRepository.save(existing));
+        return jamMapper.entityToGeneric(jamMongoRepository.save(existing));
     }
 
 
@@ -165,7 +166,7 @@ public class JamRepository {
 
     // Añadir y quitar jugadores de una jam
 
-    public JamOutputDTO addPlayerToJam(String jamId, UsuarioInputDTO jugadorDTO) {
+    public GenericJam addPlayerToJam(String jamId, UsuarioInputDTO jugadorDTO) {
         JamEntity jam = jamMongoRepository.findById(jamId)
                 .orElseThrow(() -> new JamNotFoundException("Jam no encontrada"));
 
@@ -177,7 +178,7 @@ public class JamRepository {
         }
 
         // Comprobar si el jugador ya está en la jam
-        UsuarioEntity jugador = usuarioMapper.dtoToUsuariosEntity(jugadorDTO);
+        UsuarioEntity jugador = usuarioMapper.inputToEntity(jugadorDTO);
         boolean alreadyJoined = jam.getPlayers() != null &&
                 jam.getPlayers().stream().anyMatch(p -> p.getSteamId().equals(jugador.getSteamId()));
         if (alreadyJoined) {
@@ -201,12 +202,12 @@ public class JamRepository {
 
         jamMongoRepository.save(jam); // Guardar después de todos los cambios
 
-        return jamMapper.jamToOutputDto(jam);
+        return jamMapper.entityToGeneric(jam);
     }
 
 
 
-    public JamOutputDTO removePlayerFromJam(String jamId, String steamIdToRemove) {
+    public GenericJam removePlayerFromJam(String jamId, String steamIdToRemove) {
         JamEntity jam = jamMongoRepository.findById(jamId)
                 .orElseThrow(() -> new RuntimeException("Jam no encontrada"));
 
@@ -228,26 +229,24 @@ public class JamRepository {
         updateJamStateIfNeeded(jam); // Para marcar como FINISHED si ya pasó la fecha
 
         JamEntity updated = jamMongoRepository.save(jam);
-        return jamMapper.jamToOutputDto(updated);
+        return jamMapper.entityToGeneric(updated);
     }
 
 
     // Obtener jams que ha hecho un usuario y en las que participa
 
-    public List<JamOutputDTO> getJamsByCreator(String steamId) {
-        return jamMongoRepository
+    public List<GenericJam> getJamsByCreator(String steamId) {
+        return jamMapper.entityListToGeneric(jamMongoRepository
                 .findByCreatedBy_SteamId(steamId).stream()
                 .peek(this::updateJamStateIfNeeded)
-                .map(jamMapper::jamToOutputDto)
-                .toList();
+                .toList());
     }
 
-    public List<JamOutputDTO> getJamsByUser(String steamId) {
-        return jamMongoRepository
+    public List<GenericJam> getJamsByUser(String steamId) {
+        return jamMapper.entityListToGeneric(jamMongoRepository
                 .findByPlayers_SteamId(steamId).stream()
                 .peek(this::updateJamStateIfNeeded)
-                .map(jamMapper::jamToOutputDto)
-                .toList();
+                .toList());
     }
 
 
