@@ -1,7 +1,7 @@
 package com.saraylg.matchmaker.matchmaker.repository;
 
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.output.UsuarioOutputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.output.GenericResponseDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.model.InvitationEntity;
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
@@ -10,12 +10,12 @@ import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.InvitationMongoRepository;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.JamMongoRepository;
 import com.saraylg.matchmaker.matchmaker.repository.mongo.UsuarioMongoRepository;
+import com.saraylg.matchmaker.matchmaker.service.generics.GenericUsuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Repositorio que se encarga de manejar las operaciones de base de datos
@@ -35,42 +35,46 @@ public class UsuarioRepository {
 
     /**
      * Guarda un nuevo usuario en la base de datos a partir de un DTO de entrada.
+     *
      * @param userDto DTO con los datos del usuario.
      * @return Mensaje de éxito.
      */
-    public String saveUser(UsuarioInputDTO userDto) {
-        UsuarioEntity usuarioNuevo = usuarioMapper.dtoToUsuariosEntity(userDto);
+    public GenericUsuario saveUser(UsuarioInputDTO userDto) {
+        UsuarioEntity usuarioNuevo = usuarioMapper.inputToEntity(userDto);
         usuarioMongoRepository.save(usuarioNuevo);
-        return "Usuario guardado con éxito";
+        return usuarioMapper.entityToGeneric(usuarioNuevo);
     }
 
 
     /**
      * Obtiene todos los usuarios guardados en la base de datos.
+     *
      * @return Lista de entidades de usuarios.
      */
-    public List<UsuarioEntity> findAllUsers() {
-        return usuarioMongoRepository.findAll();
+    public List<GenericUsuario> findAllUsers() {
+
+        return usuarioMapper.entityListToGeneric(usuarioMongoRepository.findAll());
     }
 
     /**
      * Busca un usuario por su Steam ID.
+     *
      * @param steamId ID de Steam del usuario.
      * @return Un Optional con el usuario si existe.
      */
-    public Optional<UsuarioEntity> findUserById(String steamId) {
-        return usuarioMongoRepository.findById(steamId);
+    public Optional<GenericUsuario> findUserById(String steamId) {
+        return usuarioMapper.entityOptionalToGeneric(usuarioMongoRepository.findById(steamId));
     }
 
     /**
      * Actualiza los datos de un usuario existente en la base de datos.
-     * @param steamId ID del usuario a actualizar.
+     *
+     * @param steamId    ID del usuario a actualizar.
      * @param updatedDto DTO con los nuevos datos.
      * @return DTO de salida con los datos actualizados.
      */
-    public UsuarioOutputDTO updateUserIfChanged(String steamId, UsuarioInputDTO updatedDto) {
-        // Reutilizamos método ya existente
-        UsuarioEntity existing = findUserById(steamId)
+    public GenericUsuario updateUserIfChanged(String steamId, UsuarioInputDTO updatedDto) {
+        UsuarioEntity existing = usuarioMapper.genericOptionalToEntity(findUserById(steamId))
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         boolean hayCambios = false;
@@ -96,28 +100,30 @@ public class UsuarioRepository {
         }
 
         if (hayCambios) {
-            return usuarioMapper.entityToOutputDto(usuarioMongoRepository.save(existing));
+            return usuarioMapper.entityToGeneric(usuarioMongoRepository.save(existing));
         } else {
-            return usuarioMapper.entityToOutputDto(existing);
+            return usuarioMapper.entityToGeneric(existing);
         }
     }
 
 
-    /**
-     * Elimina un usuario de la base de datos según su Steam ID.
-     * @param steamId ID del usuario a eliminar.
-     * @return Mensaje de éxito.
-     */
+    // Cambiar por respuesta genérica
+    public GenericResponseDTO<GenericUsuario> deleteUser(String steamId) {
+        GenericUsuario deletedUser = findUserById(steamId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-    public String deleteUser(String steamId) {
         deleteJamsCreatedByUser(steamId);
         deleteJamsCreatedByUser(steamId);
         removeUserFromAllJams(steamId);
         deleteAllUserInvitations(steamId);
         usuarioMongoRepository.deleteById(steamId);
 
-        return "Usuario y todos sus datos relacionados eliminados con éxito";
-    }
+        return new GenericResponseDTO<>(
+                "Usuario y todos sus datos relacionados eliminados con éxito",
+                "200",
+                deletedUser
+        );    }
+
 
     private void deleteJamsCreatedByUser(String steamId) {
         // Obtener todas las jams creadas por el usuario
@@ -150,4 +156,20 @@ public class UsuarioRepository {
             invRepository.deleteInvite(inv.getInvId());
         }
     }
+
+    /*
+    *    private GenericResponseDTO<List<GenericInvitation>> deleteAllUserInvitations(String steamId) {
+        // Eliminar invitaciones donde el usuario es el remitente o el receptor
+        List<InvitationEntity> invitaciones = invMongoRepo.findBySenderIdOrReceiverId(steamId, steamId);
+
+        for (InvitationEntity inv : invitaciones) {
+            invRepository.deleteInvite(inv.getInvId());
+        }
+
+        return new GenericResponseDTO<List<GenericInvitation>>(
+                "Todas las invitaciones del usuario han sido eliminadas",
+                "200",
+                invMapper.entityListToGenericList(invitaciones)
+        );
+    * */
 }
