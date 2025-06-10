@@ -27,9 +27,18 @@ public class AuthService {
     private final UsuarioMapper usuarioMapper;
 
 
+    private boolean isHttps = true; // true si HTTPS, false si HTTP
+    private String FRONT_URL = "https://mm-vercel-ten.vercel.app";
+    private String API_URL = "https://matchmakerapi.onrender.com";
+    //private String FRONT_URL = "http://localhost:3000";
+    // private String API_URL = "http://localhost:8080";
+
+
+
     public void redirigirSteam(HttpServletResponse response) throws IOException {
-        // String API_URL = "https://matchmakerapi.onrender.com";
-        String API_URL = "http://localhost:8080";
+
+
+
         String steamUrl = "https://steamcommunity.com/openid/login?" +
                 "openid.ns=http://specs.openid.net/auth/2.0&" +
                 "openid.mode=checkid_setup&" +
@@ -48,6 +57,9 @@ public class AuthService {
     }
 
     public void steamCallback(Map<String, String> params, HttpServletResponse response) throws IOException {
+         // Cambiar a true si se usa HTTPS, false si se usa HTTP
+
+
         System.out.println("Callback de Steam recibido: " + params);
 
         if (verificarSteam(params)) {
@@ -58,20 +70,18 @@ public class AuthService {
 
             Cookie cookie = new Cookie("jwt", token);
             cookie.setHttpOnly(true);
-            cookie.setSecure(false); // True si HTTPS
+            cookie.setSecure(isHttps);
             cookie.setPath("/");
             cookie.setMaxAge(86400); // 1 día
             cookie.setAttribute("SameSite", "Lax");
 
-            //String FRONT_URL = "https://mm-vercel-ten.vercel.app";
-            String FRONT_URL = "http://localhost:3000";
+
 
 
             response.setHeader("Access-Control-Allow-Origin", FRONT_URL);
             response.setHeader("Access-Control-Allow-Credentials", "true");
 
             response.addCookie(cookie);
-            // private final String API_URL = "http://localhost:8080";
 
             //response.sendRedirect(FRONT_URL + "/perfil?id=" + steamId);
 
@@ -108,7 +118,7 @@ public class AuthService {
     public void cerrarSesion(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // True si HTTPS
+        cookie.setSecure(isHttps); // True si HTTPS
         cookie.setPath("/");
         cookie.setMaxAge(0);
         cookie.setAttribute("SameSite", "Lax");
