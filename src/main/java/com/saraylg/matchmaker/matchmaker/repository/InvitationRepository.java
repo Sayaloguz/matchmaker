@@ -19,11 +19,10 @@ public class InvitationRepository {
     private final InvitationMapper invMapper;
 
 
-
-
     public List<GenericInvitation> getFromUser(String userId) {
         return invMapper.entityListToGenericList(invMongoRepo.findInvitationEntitiesByReceiverId(userId));
     }
+
 
     public GenericInvitation createInvite(GenericInvitation genericInv) {
         InvitationEntity newInvitation = invMapper.genericToEntity(genericInv);
@@ -43,4 +42,5 @@ public class InvitationRepository {
             invMongoRepo.delete(existing);
             return invMapper.entityToGeneric(existing);
     }
+
 }

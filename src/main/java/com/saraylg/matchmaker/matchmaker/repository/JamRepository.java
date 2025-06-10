@@ -30,7 +30,9 @@ public class JamRepository {
     private final JamMongoRepository jamMongoRepository;
     private final UsuarioMapper usuarioMapper;
 
+
     public void updateJamStateIfNeeded(JamEntity jam) {
+
         if (jam.getState() == JamState.FINISHED) return;
 
         LocalDateTime now = LocalDateTime.now();
@@ -41,18 +43,23 @@ public class JamRepository {
         if (jamDateTime.isBefore(now)) {
             jam.setState(JamState.FINISHED);
         }
+
     }
 
 
     public GenericJam newJam(JamInputDTO jamInputDTO) {
+
         JamEntity jam = jamMapper.jamInputDtoToJam(jamInputDTO);
 
         jamMongoRepository.save(jam);
 
         return jamMapper.entityToGeneric(jam);
+
     }
 
+
     public List<GenericJam> getAllJams() {
+
         List<JamEntity> jams = jamMongoRepository.findAll();
 
         List<GenericJam> everyJam = new ArrayList<>();
@@ -61,21 +68,30 @@ public class JamRepository {
             everyJam.add(jamMapper.entityToGeneric(jam));
         }
         return everyJam;
+
     }
 
+
     public Optional<GenericJam> getJamById(String id) {
+
         Optional<JamEntity> jamOpt = jamMongoRepository.findById(id);
         jamOpt.ifPresent(this::updateJamStateIfNeeded);
         return jamMapper.entityOptionalToGeneric(jamOpt);
+
     }
 
 
     public List<GenericJam> getJamsByTitle(String title) {
-        return jamMapper.entityListToGeneric(jamMongoRepository.findByTitleContainingIgnoreCase(title));
+        return jamMapper.entityListToGeneric(
+                jamMongoRepository.findByTitleContainingIgnoreCase(title)
+        );
     }
 
+
     public List<GenericJam> getOpenJamsByTitle(String title) {
-        return jamMapper.entityListToGeneric(jamMongoRepository.findByTitleContainingIgnoreCaseAndState(title, JamState.OPEN));
+        return jamMapper.entityListToGeneric(
+                jamMongoRepository.findByTitleContainingIgnoreCaseAndState(title, JamState.OPEN)
+        );
     }
 
 
@@ -106,27 +122,35 @@ public class JamRepository {
         if (jamModifyDTO.getTitle() != null && !jamModifyDTO.getTitle().isEmpty()) {
             existing.setTitle(jamModifyDTO.getTitle());
         }
+
         if (jamModifyDTO.getDescription() != null && !jamModifyDTO.getDescription().isEmpty()) {
             existing.setDescription(jamModifyDTO.getDescription());
         }
+
         if (jamModifyDTO.getJamDate() != null && !jamModifyDTO.getJamDate().isEmpty()) {
             existing.setJamDate(jamModifyDTO.getJamDate());
         }
+
         if (jamModifyDTO.getJamTime() != null && !jamModifyDTO.getJamTime().isEmpty()) {
             existing.setJamTime(jamModifyDTO.getJamTime());
         }
+
         if (jamModifyDTO.getMaxPlayers() != null) {
             existing.setMaxPlayers(jamModifyDTO.getMaxPlayers());
         }
+
         if (jamModifyDTO.getVoiceMode() != null) {
             existing.setVoiceMode(jamModifyDTO.getVoiceMode());
         }
+
         if (jamModifyDTO.getLanguage() != null) {
             existing.setLanguage(jamModifyDTO.getLanguage());
         }
+
         if (jamModifyDTO.getDuration() != null && !jamModifyDTO.getDuration().isEmpty()) {
             existing.setDuration(jamModifyDTO.getDuration());
         }
+
         if (jamModifyDTO.getGameMode() != null) {
             existing.setGameMode(jamModifyDTO.getGameMode());
         }
@@ -138,8 +162,8 @@ public class JamRepository {
             existing.setState(JamState.OPEN);
         }
 
-
         return jamMapper.entityToGeneric(jamMongoRepository.save(existing));
+
     }
 
 
@@ -154,7 +178,6 @@ public class JamRepository {
         return deletedJam.get(0);
     }
 
-    // Añadir y quitar jugadores de una jam
 
     public GenericJam addPlayerToJam(String jamId, UsuarioInputDTO jugadorDTO) {
         JamEntity jam = jamMongoRepository.findById(jamId)
@@ -213,7 +236,6 @@ public class JamRepository {
             throw new PlayerNotFoundInJamException("El jugador con SteamID " + steamIdToRemove + " no se encuentra en la jam");
         }
 
-
         // Actualizar estado si estaba llena y ahora hay hueco
         if (jam.getState() == JamState.FULL &&
                 jam.getPlayers() != null &&
@@ -225,10 +247,9 @@ public class JamRepository {
 
         JamEntity updated = jamMongoRepository.save(jam);
         return jamMapper.entityToGeneric(updated);
+
     }
 
-
-    // Obtener jams que ha hecho un usuario y en las que participa
 
     public List<GenericJam> getJamsByCreator(String steamId) {
         return jamMapper.entityListToGeneric(jamMongoRepository
@@ -237,11 +258,13 @@ public class JamRepository {
                 .toList());
     }
 
+
     public List<GenericJam> getJamsByUser(String steamId) {
         return jamMapper.entityListToGeneric(jamMongoRepository
                 .findByPlayers_SteamId(steamId).stream()
                 .peek(this::updateJamStateIfNeeded)
                 .toList());
+
     }
 
 

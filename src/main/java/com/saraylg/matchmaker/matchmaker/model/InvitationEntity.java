@@ -18,9 +18,13 @@ public class InvitationEntity {
 
     @Id
     private String invId;
+
     private String jamId;
+
     private String senderId;
+
     private String receiverId;
+
     private Date sentDate;
 
 }

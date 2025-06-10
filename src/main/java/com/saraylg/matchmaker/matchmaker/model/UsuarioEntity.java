@@ -18,8 +18,11 @@ public class UsuarioEntity {
     private String steamId;
 
     private String name;
+
     private String profileUrl;
+
     private String avatar;
+
     private String timeCreated;
 
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidJamOperationException.class)
-    public ResponseEntity<GenericResponseDTO<Object>>handleInvalidJamOperation(InvalidJamOperationException ex) {
+    public ResponseEntity<GenericResponseDTO<Object>> handleInvalidJamOperation(InvalidJamOperationException ex) {
 
         GenericResponseDTO<Object> response = new GenericResponseDTO<>(
                 ex.getMessage(),

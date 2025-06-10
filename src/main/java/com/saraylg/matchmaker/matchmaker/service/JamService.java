@@ -4,7 +4,6 @@ import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.JamNotFoundException;
-import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.enums.JamState;
 import com.saraylg.matchmaker.matchmaker.repository.JamRepository;
@@ -33,9 +32,11 @@ public class JamService {
                 .toList();
     }
 
+
     public GenericJam newJam(JamInputDTO jamInputDTO) {
         return jamsRepository.newJam(jamInputDTO);
     }
+
 
     public GenericJam modifyJam(JamModifyDTO jamModifyDTO) {
         return jamsRepository.modifyJam(jamModifyDTO);
@@ -45,6 +46,7 @@ public class JamService {
     public GenericJam deleteJam(String id) {
         return jamsRepository.deleteJam(id);
     }
+
 
     public GenericJam getJamById(String id) {
         return jamsRepository.getJamById(id)
@@ -57,27 +59,28 @@ public class JamService {
                 .toList();
     }
 
+
     public List<GenericJam> getOpenJamsByTitle(String title) {
         return jamsRepository.getOpenJamsByTitle(title).stream()
                 .toList();
     }
+
 
     public List<GenericJam> getJamsByMode(String mode) {
         return jamsRepository.getJamByMode(mode).stream()
                 .toList();
     }
 
-    // Añadir y quitar jugadores de una jam
-    /*public GenericJam addPlayerToJam(String jamId, UsuarioInputDTO jugadorDTO) {
-        return jamsRepository.addPlayerToJam(jamId, jugadorDTO);
-    }*/
+
     public GenericJam addPlayerToJam(String jamId, UsuarioInputDTO jugadorDTO) {
         return jamsRepository.addPlayerToJam(jamId, jugadorDTO);
     }
 
+
     public GenericJam removePlayerFromJam(String jamId, String steamId) {
         return jamsRepository.removePlayerFromJam(jamId, steamId);
     }
+
 
     public void deleteJamsCreatedByUser(String steamId) {
         // Obtener todas las jams creadas por el usuario
@@ -88,6 +91,7 @@ public class JamService {
             jamsRepository.deleteJam(jam.getId());
         }
     }
+
 
     public void removeUserFromAllJams(String steamId) {
         // Obtener todas las jams en las que participa el usuario
