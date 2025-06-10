@@ -57,8 +57,6 @@ public class AuthService {
     }
 
     public void steamCallback(Map<String, String> params, HttpServletResponse response) throws IOException {
-         // Cambiar a true si se usa HTTPS, false si se usa HTTP
-
 
         System.out.println("Callback de Steam recibido: " + params);
 
@@ -73,8 +71,7 @@ public class AuthService {
             cookie.setSecure(isHttps);
             cookie.setPath("/");
             cookie.setMaxAge(86400); // 1 día
-            cookie.setAttribute("SameSite", "Lax");
-
+            cookie.setAttribute("SameSite", "None");
 
 
 
@@ -118,10 +115,10 @@ public class AuthService {
     public void cerrarSesion(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(isHttps); // True si HTTPS
+        cookie.setSecure(isHttps);
         cookie.setPath("/");
         cookie.setMaxAge(0);
-        cookie.setAttribute("SameSite", "Lax");
+        cookie.setAttribute("SameSite", "None");
 
         response.addCookie(cookie);
 
