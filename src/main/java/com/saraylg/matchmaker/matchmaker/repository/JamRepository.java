@@ -1,7 +1,5 @@
 package com.saraylg.matchmaker.matchmaker.repository;
 
-import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.*;
 import com.saraylg.matchmaker.matchmaker.mapper.JamMapper;
@@ -47,9 +45,9 @@ public class JamRepository {
     }
 
 
-    public GenericJam newJam(JamInputDTO jamInputDTO) {
+    public GenericJam saveJam(GenericJam genericJam) {
 
-        JamEntity jam = jamMapper.jamInputDtoToJam(jamInputDTO);
+        JamEntity jam = jamMapper.genericToEntity(genericJam);
 
         jamMongoRepository.save(jam);
 
@@ -109,50 +107,50 @@ public class JamRepository {
                 .toList());
     }
 
-    public GenericJam modifyJam(JamModifyDTO jamModifyDTO) {
-        JamEntity existing = jamMongoRepository.findById(jamModifyDTO.getId())
+    public GenericJam modifyJam(GenericJam genericJam) {
+        JamEntity existing = jamMongoRepository.findById(genericJam.getId())
                 .orElseThrow(() -> new JamNotFoundException("Jam no encontrada"));
 
-        if (jamModifyDTO.getMaxPlayers() != null &&
+        if (genericJam.getMaxPlayers() != null &&
                 existing.getPlayers() != null &&
-                jamModifyDTO.getMaxPlayers() < existing.getPlayers().size()) {
+                genericJam.getMaxPlayers() < existing.getPlayers().size()) {
             throw new InvalidJamOperationException("No puedes establecer maxPlayers por debajo del número actual de jugadores.");
         }
 
-        if (jamModifyDTO.getTitle() != null && !jamModifyDTO.getTitle().isEmpty()) {
-            existing.setTitle(jamModifyDTO.getTitle());
+        if (genericJam.getTitle() != null && !genericJam.getTitle().isEmpty()) {
+            existing.setTitle(genericJam.getTitle());
         }
 
-        if (jamModifyDTO.getDescription() != null && !jamModifyDTO.getDescription().isEmpty()) {
-            existing.setDescription(jamModifyDTO.getDescription());
+        if (genericJam.getDescription() != null && !genericJam.getDescription().isEmpty()) {
+            existing.setDescription(genericJam.getDescription());
         }
 
-        if (jamModifyDTO.getJamDate() != null && !jamModifyDTO.getJamDate().isEmpty()) {
-            existing.setJamDate(jamModifyDTO.getJamDate());
+        if (genericJam.getJamDate() != null && !genericJam.getJamDate().isEmpty()) {
+            existing.setJamDate(genericJam.getJamDate());
         }
 
-        if (jamModifyDTO.getJamTime() != null && !jamModifyDTO.getJamTime().isEmpty()) {
-            existing.setJamTime(jamModifyDTO.getJamTime());
+        if (genericJam.getJamTime() != null && !genericJam.getJamTime().isEmpty()) {
+            existing.setJamTime(genericJam.getJamTime());
         }
 
-        if (jamModifyDTO.getMaxPlayers() != null) {
-            existing.setMaxPlayers(jamModifyDTO.getMaxPlayers());
+        if (genericJam.getMaxPlayers() != null) {
+            existing.setMaxPlayers(genericJam.getMaxPlayers());
         }
 
-        if (jamModifyDTO.getVoiceMode() != null) {
-            existing.setVoiceMode(jamModifyDTO.getVoiceMode());
+        if (genericJam.getVoiceMode() != null) {
+            existing.setVoiceMode(genericJam.getVoiceMode());
         }
 
-        if (jamModifyDTO.getLanguage() != null) {
-            existing.setLanguage(jamModifyDTO.getLanguage());
+        if (genericJam.getLanguage() != null) {
+            existing.setLanguage(genericJam.getLanguage());
         }
 
-        if (jamModifyDTO.getDuration() != null && !jamModifyDTO.getDuration().isEmpty()) {
-            existing.setDuration(jamModifyDTO.getDuration());
+        if (genericJam.getDuration() != null && !genericJam.getDuration().isEmpty()) {
+            existing.setDuration(genericJam.getDuration());
         }
 
-        if (jamModifyDTO.getGameMode() != null) {
-            existing.setGameMode(jamModifyDTO.getGameMode());
+        if (genericJam.getGameMode() != null) {
+            existing.setGameMode(genericJam.getGameMode());
         }
 
         int currentPlayers = existing.getPlayers() != null ? existing.getPlayers().size() : 0;
@@ -177,7 +175,6 @@ public class JamRepository {
         jamMongoRepository.deleteById(id);
         return deletedJam.get(0);
     }
-
 
     public GenericJam addPlayerToJam(String jamId, UsuarioInputDTO jugadorDTO) {
         JamEntity jam = jamMongoRepository.findById(jamId)
@@ -219,6 +216,7 @@ public class JamRepository {
     }
 
 
+
     public GenericJam removePlayerFromJam(String jamId, String steamIdToRemove) {
         JamEntity jam = jamMongoRepository.findById(jamId)
                 .orElseThrow(() -> new JamNotFoundException("Jam no encontrada"));
@@ -249,6 +247,7 @@ public class JamRepository {
         return jamMapper.entityToGeneric(updated);
 
     }
+
 
 
     public List<GenericJam> getJamsByCreator(String steamId) {

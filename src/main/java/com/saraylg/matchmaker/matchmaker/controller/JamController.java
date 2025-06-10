@@ -29,7 +29,8 @@ public class JamController {
     @Operation(summary = "Obtener todas las jams disponibles")
     @GetMapping("/")
     public List<JamOutputDTO> getAllJams() {
-        return jamMapper.genericListToOutput(jamService.getAllJams());
+        return jamMapper.genericListToOutput(
+                jamService.getAllJams());
     }
 
     @Operation(summary = "Obtener jams por estado")
@@ -71,13 +72,17 @@ public class JamController {
     @Operation(summary = "Crear una nueva jam")
     @PostMapping("/save")
     public JamOutputDTO createJam(@Valid @RequestBody JamInputDTO jamInputDTO) {
-        return jamMapper.genericToOutput(jamService.newJam(jamInputDTO));
+        return jamMapper.genericToOutput(jamService.newJam(jamMapper.inputToGeneric(jamInputDTO)
+        ));
     }
 
     @Operation(summary = "Modificar una jam existente")
     @PutMapping("/modify")
     public JamOutputDTO modifyJam(@Valid @RequestBody JamModifyDTO jamModifyDTO) {
-        return jamMapper.genericToOutput(jamService.modifyJam(jamModifyDTO));
+        return jamMapper.genericToOutput(
+                jamService.modifyJam(
+                        jamMapper.modifyToGeneric(jamModifyDTO))
+        );
     }
 
     // Añadir y quitar jugadores de una jam

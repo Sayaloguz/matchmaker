@@ -1,6 +1,7 @@
 package com.saraylg.matchmaker.matchmaker.mapper;
 
 import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
+import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
 import com.saraylg.matchmaker.matchmaker.dto.output.JamOutputDTO;
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
 import com.saraylg.matchmaker.matchmaker.model.generic.GenericJam;
@@ -11,9 +12,11 @@ import java.util.Optional;
 
 @Mapper(componentModel = "spring")
 public interface JamMapper {
-     JamEntity jamInputDtoToJam(JamInputDTO jamInputDTO);
+     JamEntity genericToEntity(GenericJam genericJam);
 
+     GenericJam inputToGeneric(JamInputDTO jamInputDTO);
 
+     GenericJam modifyToGeneric(JamModifyDTO jamModifyDTO);
      List<JamOutputDTO> genericListToOutput(List<GenericJam> genericJams);
 
      GenericJam entityToGeneric(JamEntity jamEntity);

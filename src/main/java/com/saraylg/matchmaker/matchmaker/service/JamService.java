@@ -1,7 +1,5 @@
 package com.saraylg.matchmaker.matchmaker.service;
 
-import com.saraylg.matchmaker.matchmaker.dto.input.JamInputDTO;
-import com.saraylg.matchmaker.matchmaker.dto.input.JamModifyDTO;
 import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.JamNotFoundException;
 import com.saraylg.matchmaker.matchmaker.model.JamEntity;
@@ -33,13 +31,16 @@ public class JamService {
     }
 
 
-    public GenericJam newJam(JamInputDTO jamInputDTO) {
-        return jamsRepository.newJam(jamInputDTO);
+    public GenericJam newJam(GenericJam jam) {
+        return jamsRepository.saveJam(jam);
     }
 
 
-    public GenericJam modifyJam(JamModifyDTO jamModifyDTO) {
-        return jamsRepository.modifyJam(jamModifyDTO);
+    public GenericJam modifyJam(GenericJam jam) {
+
+
+
+        return jamsRepository.modifyJam(jam);
     }
 
 
