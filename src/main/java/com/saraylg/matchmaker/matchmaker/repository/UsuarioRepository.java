@@ -1,6 +1,5 @@
 package com.saraylg.matchmaker.matchmaker.repository;
 
-import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.UserNotFoundException;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.model.UsuarioEntity;
@@ -24,19 +23,14 @@ public class UsuarioRepository {
     private final UsuarioMapper usuarioMapper;
     private final UsuarioMongoRepository usuarioMongoRepository;
 
-    //private final JamMongoRepository jamMongoRepository;
-    //private final JamRepository jamRepository;
-    //private final InvitationMongoRepository invMongoRepo;
-    //private final InvitationRepository invRepository;
-
     /**
-     * Guarda un nuevo usuario en la base de datos a partir de un DTO de entrada.
+     * Guarda un nuevo usuario en la base de datos a partir de un usuario de entrada.
      *
-     * @param userDto DTO con los datos del usuario.
+     * @param usuario Genérico de usuario con los datos del nuevo usuario.
      * @return Mensaje de éxito.
      */
-    public GenericUsuario saveUser(UsuarioInputDTO userDto) {
-        UsuarioEntity usuarioNuevo = usuarioMapper.inputToEntity(userDto);
+    public GenericUsuario saveUser(GenericUsuario usuario) {
+        UsuarioEntity usuarioNuevo = usuarioMapper.genericToEntity(usuario);
         usuarioMongoRepository.save(usuarioNuevo);
         return usuarioMapper.entityToGeneric(usuarioNuevo);
     }
@@ -66,32 +60,33 @@ public class UsuarioRepository {
      * Actualiza los datos de un usuario existente en la base de datos.
      *
      * @param steamId    ID del usuario a actualizar.
-     * @param updatedDto DTO con los nuevos datos.
-     * @return DTO de salida con los datos actualizados.
+     * @param updatedUser Usuario genérico con los nuevos datos.
+     * @return Usuario genérico con los datos actualizados.
      */
-    public GenericUsuario updateUserIfChanged(String steamId, UsuarioInputDTO updatedDto) {
+
+    public GenericUsuario updateUserIfChanged(String steamId, GenericUsuario updatedUser) {
         UsuarioEntity existing = usuarioMapper.genericOptionalToEntity(findUserById(steamId))
                 .orElseThrow(() -> new UserNotFoundException(steamId));
 
         boolean hayCambios = false;
 
-        if (!updatedDto.getName().equals(existing.getName())) {
-            existing.setName(updatedDto.getName());
+        if (!updatedUser.getName().equals(existing.getName())) {
+            existing.setName(updatedUser.getName());
             hayCambios = true;
         }
 
-        if (!updatedDto.getAvatar().equals(existing.getAvatar())) {
-            existing.setAvatar(updatedDto.getAvatar());
+        if (!updatedUser.getAvatar().equals(existing.getAvatar())) {
+            existing.setAvatar(updatedUser.getAvatar());
             hayCambios = true;
         }
 
-        if (!updatedDto.getProfileUrl().equals(existing.getProfileUrl())) {
-            existing.setProfileUrl(updatedDto.getProfileUrl());
+        if (!updatedUser.getProfileUrl().equals(existing.getProfileUrl())) {
+            existing.setProfileUrl(updatedUser.getProfileUrl());
             hayCambios = true;
         }
 
-        if (!updatedDto.getTimeCreated().equals(existing.getTimeCreated())) {
-            existing.setTimeCreated(updatedDto.getTimeCreated());
+        if (!updatedUser.getTimeCreated().equals(existing.getTimeCreated())) {
+            existing.setTimeCreated(updatedUser.getTimeCreated());
             hayCambios = true;
         }
 
@@ -102,7 +97,12 @@ public class UsuarioRepository {
         }
     }
 
-
+    /**
+     * Borra un usuario de la base de datos por su Steam ID.
+     *
+     * @param steamId    ID del usuario a borrar.
+     * @return Usuario genérico borrado.
+     */
     public GenericUsuario deleteUser(String steamId) {
         GenericUsuario deletedUser = findUserById(steamId)
                 .orElseThrow(() -> new UserNotFoundException(steamId));

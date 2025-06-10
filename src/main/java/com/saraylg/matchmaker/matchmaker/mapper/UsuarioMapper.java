@@ -13,8 +13,6 @@ import java.util.Optional;
 @Mapper(componentModel = "spring")
 public interface UsuarioMapper {
 
-    UsuarioInputDTO steamPlayerToInput(SteamPlayerInputDTO steamPlayer);
-
     UsuarioEntity inputToEntity(UsuarioInputDTO usuarioDTO);
 
     GenericUsuario entityToGeneric(UsuarioEntity usuarioEntity);
@@ -25,9 +23,9 @@ public interface UsuarioMapper {
 
     UsuarioOutputDTO genericToOutput(GenericUsuario genericUsuario);
 
-    GenericUsuario inputToGeneric(UsuarioInputDTO usuarioInputDTO);
-
     UsuarioEntity genericToEntity(GenericUsuario genericUsuario);
+
+    GenericUsuario steamPlayerToGeneric(SteamPlayerInputDTO steamPlayerInputDTO);
 
     default Optional<UsuarioEntity> genericOptionalToEntity(Optional<GenericUsuario> genericUsuarioOpt) {
         return genericUsuarioOpt.map(this::genericToEntity);

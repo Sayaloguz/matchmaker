@@ -12,11 +12,15 @@ import java.util.List;
 public interface InvitationMapper {
 
     InvitationEntity genericToEntity(GenericInvitation genericInv);
+
     GenericInvitation entityToGeneric(InvitationEntity invEntity);
+
     GenericInvitation inputToGeneric(InvitationInputDTO invInputDTO);
+
     InvitationOutputDTO genericToOutput(GenericInvitation genericInvitation);
 
     List<GenericInvitation> entityListToGenericList(List<InvitationEntity> invEntityList);
+
     List<InvitationOutputDTO> genericListToOutputList(List<GenericInvitation> invGenericList);
 
 }

@@ -2,7 +2,6 @@ package com.saraylg.matchmaker.matchmaker.service;
 
 import com.saraylg.matchmaker.matchmaker.dto.input.SteamPlayerInputDTO;
 import com.saraylg.matchmaker.matchmaker.dto.internal.SteamApiResponse;
-import com.saraylg.matchmaker.matchmaker.dto.input.UsuarioInputDTO;
 import com.saraylg.matchmaker.matchmaker.exceptions.UserNotFoundException;
 import com.saraylg.matchmaker.matchmaker.mapper.UsuarioMapper;
 import com.saraylg.matchmaker.matchmaker.repository.UsuarioRepository;
@@ -30,10 +29,7 @@ public class UsuarioService {
     private final JamService jamService;
     private final InvitationService invitationService;
 
-    /**
-     * Devuelve los datos del jugador. Si no está en la BD, lo obtiene de Steam.
-     * ✅ Usa la API de Steam si el usuario no existe.
-     */
+
     public GenericUsuario getPlayer(String steamId) {
         Optional<GenericUsuario> userOpt = usuariosRepository.findUserById(steamId);
 
@@ -41,16 +37,12 @@ public class UsuarioService {
             return userOpt.get();
         } else {
             SteamPlayerInputDTO steamPlayer = fetchSteamPlayer(steamId);
-            UsuarioInputDTO dto = usuarioMapper.steamPlayerToInput(steamPlayer);
-            return usuariosRepository.saveUser(dto);
-            // return usuarioMapper.dtoToOutputDto(dto);
+            GenericUsuario usuario = usuarioMapper.steamPlayerToGeneric(steamPlayer);
+            return usuariosRepository.saveUser(usuario);
         }
     }
 
-    /**
-     * Si el usuario no existe, lo obtiene de Steam y lo guarda.
-     * ✅ Usa la API de Steam si es necesario.
-     */
+
     public GenericUsuario getAndSavePlayer(String steamId) {
         Optional<GenericUsuario> existing = usuariosRepository.findUserById(steamId);
 
@@ -59,72 +51,44 @@ public class UsuarioService {
         }
 
         SteamPlayerInputDTO steamPlayer = fetchSteamPlayer(steamId);
-        UsuarioInputDTO dto = usuarioMapper.steamPlayerToInput(steamPlayer);
-        usuariosRepository.saveUser(dto);
-        return usuarioMapper.inputToGeneric(dto);
+
+        return usuariosRepository.saveUser(usuarioMapper.steamPlayerToGeneric(steamPlayer));
     }
 
-    /**
-     * Devuelve todos los usuarios guardados.
-     * ❌ No usa la API de Steam.
-     */
+
     public List<GenericUsuario> getAllUsers() {
         return usuariosRepository.findAllUsers();
-        /*return usuariosRepository.findAllUsers()
-                .stream()
-                .map(usuarioMapper::entityToOutput)
-                .toList();*/
     }
 
-    /**
-     * Devuelve un usuario por su ID desde la base de datos.
-     * ❌ No usa la API de Steam.
-     */
+
     public GenericUsuario getUserById(String steamId) {
         GenericUsuario user = usuariosRepository.findUserById(steamId)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
         return user;
     }
 
-    /**
-     * Actualiza los datos del usuario.
-     *  ✅ Sí usa la API de Steam.
-     */
     public GenericUsuario updateUser(String steamId) {
-        // Reutilizamos método existente para obtener el usuario desde Steam
-        SteamPlayerInputDTO steamPlayer = fetchSteamPlayer(steamId);
-        UsuarioInputDTO usuarioDesdeSteam = usuarioMapper.steamPlayerToInput(steamPlayer);
 
-        // Reutilizamos el método del repository
-        return usuariosRepository.updateUserIfChanged(steamId, usuarioDesdeSteam);
+        SteamPlayerInputDTO steamPlayer = fetchSteamPlayer(steamId);
+
+        GenericUsuario usuario = usuarioMapper.steamPlayerToGeneric(steamPlayer);
+
+        return usuariosRepository.updateUserIfChanged(steamId, usuario);
     }
 
-    /**
-     * Elimina un usuario por su Steam ID.
-     * ❌ No usa la API de Steam.
-     */
+
     public GenericUsuario deleteUser(String steamId) {
-        GenericUsuario deletedUser = usuariosRepository.findUserById(steamId)
+        usuariosRepository.findUserById(steamId)
                 .orElseThrow(() -> new UserNotFoundException(steamId));
 
-        // 1. Eliminar todas las jams creadas por el usuario
         jamService.deleteJamsCreatedByUser(steamId);
-
-        // 2. Eliminar al usuario de todas las jams donde participa
         jamService.removeUserFromAllJams(steamId);
-
-        // 3. Eliminar todas las invitaciones relacionadas
         invitationService.deleteAllUserInvitations(steamId);
-
-        // 4. Finalmente eliminar el usuario
 
         return usuariosRepository.deleteUser(steamId);
     }
 
-    /**
-     * Método interno para consultar a la Steam Web API y obtener los datos de un jugador.
-     * ✅ Usa la API de Steam.
-     */
+    // Consulta a la Steam Web API y obtiene los datos de un jugador en su sistema
     private SteamPlayerInputDTO fetchSteamPlayer(String steamId) {
         try {
             SteamApiResponse response = steamWebClient.get()

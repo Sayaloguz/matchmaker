@@ -5,6 +5,7 @@ import com.saraylg.matchmaker.matchmaker.dto.output.InvitationOutputDTO;
 import com.saraylg.matchmaker.matchmaker.mapper.InvitationMapper;
 import com.saraylg.matchmaker.matchmaker.service.InvitationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/invitations")
+@Tag(name = "Invitaciones", description = "Endpoints para gestionas invitaciones entre usuarios")
 public class InvitationController {
 
     private final InvitationService invitationService;

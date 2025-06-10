@@ -9,13 +9,13 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
-    /** WebClient genérico  */
+    // WebClient genérico
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
         return builder.build();
     }
 
-    /** WebClient Steam para GetAppList) */
+    // WebClient Steam para GetAppList)
     @Bean(name = "steamWebClient")
     public WebClient steamWebClient() {
         HttpClient httpClient = HttpClient.create().compress(true);
@@ -28,7 +28,7 @@ public class WebClientConfig {
                 .build();
     }
 
-    /** WebClient Steam para appdetails */
+    // WebClient Steam para appdetails
     @Bean(name = "storeWebClient")
     public WebClient storeWebClient() {
         HttpClient httpClient = HttpClient.create().compress(true);

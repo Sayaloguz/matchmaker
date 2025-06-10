@@ -85,6 +85,7 @@ public class GlobalExceptionHandler {
                 String.valueOf(HttpStatus.NOT_FOUND.value()),
                 null
         );
+
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -95,6 +96,7 @@ public class GlobalExceptionHandler {
                 String.valueOf(HttpStatus.CONFLICT.value()),
                 null
         );
+
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
