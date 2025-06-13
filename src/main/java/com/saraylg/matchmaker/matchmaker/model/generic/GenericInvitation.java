@@ -12,9 +12,15 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GenericInvitation {
+
     private String invId;
+
     private String jamId;
+
     private String receiverId;
+
     private String senderId;
+
     private Date sentDate;
+
 }

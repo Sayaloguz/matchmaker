@@ -182,10 +182,6 @@ public class JamRepository {
 
         updateJamStateIfNeeded(jam);
 
-        // Verificar si la jam está abierta
-        if (jam.getState() != JamState.OPEN) {
-            throw new InvalidJamOperationException("La jam no está disponible");
-        }
 
         // Comprobar si el jugador ya está en la jam
         UsuarioEntity jugador = usuarioMapper.inputToEntity(jugadorDTO);
