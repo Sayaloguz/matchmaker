@@ -70,11 +70,11 @@ public class JwtService {
                 .getBody();
 
         return new UsuarioOutputDTO(
-                claims.getSubject(),                // steamId
-                claims.get("name", String.class),   // name
+                claims.getSubject(),
+                claims.get("name", String.class),
                 claims.get("profileUrl", String.class),
                 claims.get("avatar", String.class),
-                null                                // timeCreated si lo incluyes como claim adicional
+                null
         );
     }
 }
